@@ -1,86 +1,26 @@
 [
   {
-    "title": "Escuadra",
-    "price": 67,
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
+    "title": "cosa6",
+    "price": 123,
+    "thumbnail": "https://ejejejsdfsdfdsf",
     "id": 1
   },
   {
-    "title": "Calculadora",
-    "price": 234.56,
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/calculator-math-tool-school-256.png",
+    "title": "cosa7",
+    "price": 123,
+    "thumbnail": "http://localhost:8080/api/images/1637785586285-thumbnail.jpeg",
     "id": 2
   },
   {
-    "title": "Globo Terráqueo",
-    "price": 345.67,
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png",
+    "title": "cosa8",
+    "price": 123,
+    "thumbnail": "http://localhost:8080/api/images/1637786053797-thumbnail.jpeg",
     "id": 3
   },
   {
-    "title": "EscuadraNueva",
-    "price": 67,
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
+    "title": "walter",
+    "price": 24,
+    "thumbnail": "httpskadk",
     "id": 4
-  },
-  {
-    "title": "Escualalalal",
-    "price": 67,
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
-    "id": 5
-  },
-  {
-    "title": "nuevoproducto",
-    "price": "123",
-    "thumbnail": "213123",
-    "id": 6
-  },
-  {
-    "title": "123123",
-    "price": "123123",
-    "thumbnail": "1231",
-    "id": 7
-  },
-  {
-    "title": "hhhhhhh",
-    "price": "1222222222",
-    "thumbnail": "hchhhhh",
-    "id": 8
-  },
-  {
-    "title": "walter producto",
-    "price": "123123",
-    "thumbnail": "https;//jjdajsdajsadj",
-    "id": 9
-  },
-  {
-    "title": "Gorritas",
-    "price": "123",
-    "thumbnail": "https://www.ggoogle.com",
-    "id": 10
-  },
-  {
-    "title": "calabaza",
-    "price": "43",
-    "thumbnail": "https://asjdajsjdas",
-    "id": 11
-  },
-  {
-    "title": "calabaza2",
-    "price": "123",
-    "thumbnail": "https://jdsjjasd",
-    "id": 12
-  },
-  {
-    "title": "Walter",
-    "price": "123",
-    "thumbnail": "https://asdjdjsdaj",
-    "id": 13
-  },
-  {
-    "title": "Walter12",
-    "price": "123",
-    "thumbnail": "https://asdjdjsdaj",
-    "id": 14
   }
 ]
