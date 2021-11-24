@@ -3,7 +3,14 @@ document.addEventListener('submit',event=>{
     let newTitle= document.getElementById('title').value;
     let newPrice= document.getElementById('price').value;
     let newThumbnail= document.getElementById('thumbnail').value;
-    let newForm ={title:newTitle,price:newPrice,thumbnail:newThumbnail} 
+
+    let newForm ={
+        title:newTitle,
+        price:newPrice,
+        thumbnail:newThumbnail
+    } 
+    // let productForm = document.querySelector('#petForm');
+    // let data = new FormData(productForm);
     fetch('http://localhost:8080/api/products',{
         method:'POST',      
         headers: { 'Content-Type': 'application/json' },        
