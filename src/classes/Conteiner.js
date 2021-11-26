@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs'
 
 class Conteiner{    
     constructor(fileName){
@@ -129,5 +129,4 @@ class Conteiner{
     }
 }
 
-
-module.exports = Conteiner
+export default Conteiner

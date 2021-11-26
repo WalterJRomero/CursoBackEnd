@@ -1,9 +1,10 @@
-const express = require ('express');
+import express from 'express';
+import Conteiner from '../classes/Conteiner.js';
+import upload from '../services/upload.js'
+
 const router = express.Router();
-const Conteiner = require('../classes/Conteiner');
 const PATH = './files/productsList.json';
 const conteiner = new Conteiner(PATH);
-const upload = require('../services/upload')
 
 //GET
 router.get('/',async (req,res)=>{    
@@ -23,7 +24,7 @@ router.get('/:id',async (req,res)=>{
 
 // POST sin upload
 router.post('/',async (req,res)=>{    
-    let newProduct = req.body; 
+    let newProduct = req.body;     
     console.log(newProduct)
     let result = await conteiner.save(newProduct); 
     res.send(result)      
@@ -32,26 +33,7 @@ router.post('/',async (req,res)=>{
 //POST CON upload
 // router.post('/',upload.single('thumbnail'),async (req,res)=>{    
 //     let newProduct = req.body;           
-//     let thumbnail = "http://localhost:8080/api/images/"+req.file.filename;
-//     newProduct.thumbnail= thumbnail;     
-//     newProduct.price=parseInt(newProduct.price)
-//     let result = await conteiner.save(newProduct); 
-//     res.send(result)      
-// })
-
-//POST CON upload fields
-// router.post('/',upload.fields({
-//  [
-//      {
-//          name:"thumbnail",maxCount:1,
-//      },
-//      {
-//          name:"documents",maxCount:1,
-//      }
-//]
-//}),async (req,res)=>{    
-//     let newProduct = req.body;           
-//     let thumbnail = "http://localhost:8080/api/images/"+req.file.filename;
+//     let thumbnail = req.protocol+"://"+req.hostname+":8080"+"/images"+req.file.filename;
 //     newProduct.thumbnail= thumbnail;     
 //     newProduct.price=parseInt(newProduct.price)
 //     let result = await conteiner.save(newProduct); 
@@ -73,4 +55,4 @@ router.delete('/:id',async (req,res)=>{
     res.send(data)
 })
 
-module.exports = router;
+export default router

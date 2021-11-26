@@ -1,26 +1,32 @@
 [
   {
-    "title": "cosa6",
-    "price": 123,
-    "thumbnail": "https://ejejejsdfsdfdsf",
+    "title": "Kit Kat Sweet Dark Matcha Green Tea",
+    "price": "687",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/KIT10_22ab2c6a-e0db-4b5c-96c4-f6c81d3b081e_640x.jpg?v=1582608877",
     "id": 1
   },
   {
-    "title": "cosa7",
-    "price": 123,
-    "thumbnail": "http://localhost:8080/api/images/1637785586285-thumbnail.jpeg",
+    "title": "Glico Pocky Rich Matcha Green Tea 3 Pack",
+    "price": "1559",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/GLI6b_500x.png?v=1580190418",
     "id": 2
   },
   {
-    "title": "cosa8",
-    "price": 123,
-    "thumbnail": "http://localhost:8080/api/images/1637786053797-thumbnail.jpeg",
+    "title": "Glico Pocky Almond Crush 3Pack",
+    "price": "1116",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/GLI1b_500x.png?v=1580190590",
     "id": 3
   },
   {
-    "title": "walter",
-    "price": 24,
-    "thumbnail": "httpskadk",
+    "title": "Meiji Kaju Orange Gummy 3 Pack",
+    "price": "685",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/MEI11_410x.jpg?v=1568530658",
     "id": 4
+  },
+  {
+    "title": " PREVIOUS ITEMNEXT ITEM  Sakeru Grape Gummy 3 Pack",
+    "price": "685",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/SAK2_500x.jpg?v=1566354570",
+    "id": 5
   }
 ]
