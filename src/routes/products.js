@@ -1,20 +1,23 @@
 import express from 'express';
+// const express = require('express');
 import Conteiner from '../classes/Conteiner.js';
-import upload from '../services/upload.js'
-
+// const Conteiner = require('../classes/Conteiner')
+import upload from '../services/upload.js';
+// const upload = require('../services/upload')
+import __dirname from '../utils.js'
 const router = express.Router();
-const PATH = './files/productsList.json';
+const PATH = __dirname+'/files/productsList.json';
 const conteiner = new Conteiner(PATH);
 
 //GET
 router.get('/',async (req,res)=>{    
-    let {data} = await conteiner.getAll()    
+    let {data} = await conteiner.getAll();
     res.send(data)
 })
 
 router.get('/:id',async (req,res)=>{   
-    let idReq = parseInt(req.params.id)     
-    let {data} = await conteiner.getById(idReq)       
+    let idReq = parseInt(req.params.id);    
+    let {data} = await conteiner.getById(idReq);       
     if(data) {
         res.send(data)
     } else {
@@ -24,8 +27,7 @@ router.get('/:id',async (req,res)=>{
 
 // POST sin upload
 router.post('/',async (req,res)=>{    
-    let newProduct = req.body;     
-    console.log(newProduct)
+    let newProduct = req.body;    
     let result = await conteiner.save(newProduct); 
     res.send(result)      
 })
@@ -44,15 +46,16 @@ router.post('/',async (req,res)=>{
 router.put('/:id',async (req,res)=>{    
         let idReq = parseInt(req.params.id);
     let upProduct = req.body;
-    let data = await conteiner.updateProduct(idReq,upProduct)
+    let data = await conteiner.updateProduct(idReq,upProduct);
     res.send(data)       
 })
 
 // DELETE
 router.delete('/:id',async (req,res)=>{ 
     let idReq = parseInt(req.params.id);
-    let data = await conteiner.deletebyId(idReq)
+    let data = await conteiner.deletebyId(idReq);
     res.send(data)
 })
 
 export default router
+// module.exports = router

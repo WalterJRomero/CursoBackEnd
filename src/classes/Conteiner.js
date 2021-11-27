@@ -1,4 +1,5 @@
 import fs from 'fs'
+// const fs = require('fs')
 
 class Conteiner{    
     constructor(fileName){
@@ -130,3 +131,4 @@ class Conteiner{
 }
 
 export default Conteiner
+// module.exports = Conteiner
