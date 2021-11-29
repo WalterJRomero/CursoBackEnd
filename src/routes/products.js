@@ -1,10 +1,9 @@
 import express from 'express';
-// const express = require('express');
 import Conteiner from '../classes/Conteiner.js';
-// const Conteiner = require('../classes/Conteiner')
 import upload from '../services/upload.js';
-// const upload = require('../services/upload')
-import __dirname from '../utils.js'
+import __dirname from '../utils.js';
+import {io} from '../server.js'
+
 const router = express.Router();
 const PATH = __dirname+'/files/productsList.json';
 const conteiner = new Conteiner(PATH);
@@ -30,6 +29,11 @@ router.post('/',async (req,res)=>{
     let newProduct = req.body;    
     let result = await conteiner.save(newProduct); 
     res.send(result)      
+    if (result.status==="success"){
+        conteiner.getAll().then(result=>{
+            io.emit('updateProducts',result)
+        })
+    }
 })
 
 //POST CON upload
@@ -58,4 +62,3 @@ router.delete('/:id',async (req,res)=>{
 })
 
 export default router
-// module.exports = router

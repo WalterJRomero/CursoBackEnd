@@ -1,32 +1,29 @@
 import express from 'express';
-// const express = require('express');
 import {engine} from 'express-handlebars';
-// const {engine} = require('express-handlebars');
 import cors from 'cors';
-// const cors = require('cors');
 import Conteiner from './classes/Conteiner.js';
-// const Conteiner = require('./classes/Conteiner')
+import Chats from './classes/chats.js';
 import router from './routes/products.js';
-// const router = require('./routes/products');
 import upload from './services/upload.js';
-// const upload = require('./services/upload')
 import {Server} from 'socket.io'
-// const {Server} = require('socket.io');
 import __dirname from './utils.js'
+import moment from 'moment';
 
 const PATH = __dirname+'/files/productsList.json';
+const CHATSPATH = __dirname+'/files/chatsHistorical.json'
 const conteiner = new Conteiner(PATH);
+const chats = new Chats(CHATSPATH)
 const app = express();
 const PORT = process.env.PORT||8080;
 const server = app.listen(PORT,()=>{
     console.log('Server listening on port: '+PORT)
 })
-const io = new Server(server);
+export const io = new Server(server);
 
-app.use(express.static(__dirname+'/public'))
 app.engine('handlebars',engine());
-app.set('view engine','handlebars');
 app.set('views',__dirname+'/views');
+app.set('view engine','handlebars');
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({extended:true}));
@@ -36,35 +33,25 @@ app.use((req,res,next)=>{
     console.log('Peticion hecha a las: '+time.toTimeString().split(" ")[0]);
     next();
 })
-app.use('/api/products',router);
 
-//ejemplo chat
-let messages=[]
-io.on('connection',socket=>{
-    console.log('Cliente conectado')
-    socket.emit('messagelog',messages)
-    socket.emit('welcome','Socket conectado')
-    socket.on('message', data=>{
-        messages.push(data)
-        io.emit('messagelog',messages);
-    })
-})
+app.use(express.static(__dirname+'/public'));
+app.use('/api/products',router);
 
 //para subir varios archivos
 // app.post('/api/uploadfile',upload.fields([
-//     {
-//         name:'file', maxCount:1
-//     },
-//     {
-//         name:"documents", maxCount:3
-//     }
-// ]),(req,res)=>{
-//     const files = req.files;
-//     console.log(files);
-//     if(!files||files.length===0){
-//         res.status(500).send({messsage:"No se subió archivo"})
-//     }
-//     res.send(files);
+    //     {
+        //         name:'file', maxCount:1
+        //     },
+        //     {
+            //         name:"documents", maxCount:3
+            //     }
+            // ]),(req,res)=>{
+                //     const files = req.files;
+                //     console.log(files);
+                //     if(!files||files.length===0){
+                    //         res.status(500).send({messsage:"No se subió archivo"})
+                    //     }
+                    //     res.send(files);
 // })
 
 app.get('/views/products',(req,res)=>{
@@ -76,3 +63,25 @@ app.get('/views/products',(req,res)=>{
         res.render('products',preparedObj);
     })
 })
+
+//muestra los productos que tengo actualmente
+io.on('connection',async socket=>{
+    console.log(`Socket ${socket.id} connected`);
+    let products = await conteiner.getAll();
+    socket.emit('updateProducts',products)
+   
+})
+
+//Chats en pantalla
+let {chatsData} = await chats.getAllChats()
+
+io.on('connection',async socket=>{    
+    socket.emit('messagelog',chatsData)    
+    socket.on('message',async data=>{        
+        let date = moment().format('DD/MM/YYYY HH:mm:ss')        
+        data.date = date        
+        await chats.saveChats(data)    
+        io.emit('messagelog',chatsData);
+    })
+})
+
