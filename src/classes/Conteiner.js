@@ -9,17 +9,21 @@ class Conteiner{
         try{
             let data =await fs.promises.readFile(this.fileName,'utf-8');
             let products =JSON.parse(data); 
-            let nuevoId = products[products.length-1].id+1;  
-
+            let nuevoId = products[products.length-1].id+1;
             if (products.some(prod=>prod.title===product.title)){ 
                 return {status:"error",message:"Producto existente"}
-
             }else{
+                let timestamp = Date.now();
+                let time = new Date(timestamp);
                 let prodObj = {
-                    title:product.title,
-                    price:product.price,
-                    thumbnail:product.thumbnail,
                     id:nuevoId,
+                    timestamp:time,
+                    title:product.title,
+                    description:product.description,
+                    code:product.code,
+                    thumbnail:product.thumbnail,
+                    price:product.price,
+                    stock:product.stock
                 }                                
                 products.push(prodObj);
                 try{
@@ -30,12 +34,18 @@ class Conteiner{
                     return {status:"error",message:"No se pudo agregar el producto"}
                 }
             }             
-        }catch{
+        }catch{             
+            let timestamp = Date.now();
+            let time = new Date(timestamp);
             let prodObj = {
-                title:product.title,
-                price:product.price,
-                thumbnail:product.thumbnail,
                 id:1,
+                timestamp:time,
+                title:product.title,
+                description:product.description,
+                code:product.code,
+                thumbnail:product.thumbnail,
+                price:product.price,
+                stock:product.stock
             }    
             try {
                 await fs.promises.writeFile(this.fileName,JSON.stringify([prodObj]),null,2) 
@@ -84,7 +94,7 @@ class Conteiner{
             if(!products.some(product=>product.id===id)) return {status:"error", message:"No hay un producto con el id elegido"}
             let result = products.map(product=>{                
                 if(product.id===id){                     
-                    productSelect = Object.assign(productSelect,{title:productSelect.title,price:productSelect.price,thumbnail:productSelect.thumbnail})                    
+                    productSelect = Object.assign(productSelect,{title:productSelect.title,description:productSelect.description,code:productSelect.code,thumbnail:productSelect.thumbnail,price:productSelect.price,stock:productSelect.stock})                    
                     productSelect = Object.assign({...productSelect,id:product.id})                    
                     return productSelect                    
                 }else{                   

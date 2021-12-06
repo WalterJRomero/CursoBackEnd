@@ -4,21 +4,23 @@ import cors from 'cors';
 import Conteiner from './classes/Conteiner.js';
 import Chats from './classes/chats.js';
 import router from './routes/products.js';
-import upload from './services/upload.js';
+// import upload from './services/upload.js';
 import {Server} from 'socket.io'
 import __dirname from './utils.js'
 import moment from 'moment';
+import { authMiddleware } from './utils.js';
 
 const PATH = __dirname+'/files/productsList.json';
-const CHATSPATH = __dirname+'/files/chatsHistorical.json'
+const CHATSPATH = __dirname+'/files/chatsHistorical.json';
 const conteiner = new Conteiner(PATH);
-const chats = new Chats(CHATSPATH)
+const chats = new Chats(CHATSPATH);
 const app = express();
 const PORT = process.env.PORT||8080;
 const server = app.listen(PORT,()=>{
     console.log('Server listening on port: '+PORT)
 })
 export const io = new Server(server);
+export const admin=false;
 
 app.engine('handlebars',engine());
 app.set('views',__dirname+'/views');
@@ -30,7 +32,8 @@ app.use(express.urlencoded({extended:true}));
 app.use((req,res,next)=>{
     let timestamp = Date.now();
     let time = new Date(timestamp);
-    console.log('Peticion hecha a las: '+time.toTimeString().split(" ")[0]);
+    console.log('Peticion hecha a las: '+time.toTimeString().split(" ")[0],req.method,req.url);    
+    req.auth = admin
     next();
 })
 
@@ -61,7 +64,7 @@ app.get('/views/products',(req,res)=>{
             products : data
         }
         res.render('products',preparedObj);
-    })
+    })    
 })
 
 //muestra los productos que tengo actualmente
@@ -72,7 +75,12 @@ io.on('connection',async socket=>{
    
 })
 
-//Chats en pantalla
+io.on('connection',async socket=>{    
+    let auth = admin;
+    socket.emit('auth',auth)   
+})
+
+//Chats en pantalla-----------------------------------------
 let {chatsData} = await chats.getAllChats()
 
 io.on('connection',async socket=>{    
@@ -85,3 +93,10 @@ io.on('connection',async socket=>{
     })
 })
 
+app.get('*', function(req, res){
+    let error = {
+        route:req.params[0],
+        method:req.method,
+    }    
+    res.render('error',error)
+});

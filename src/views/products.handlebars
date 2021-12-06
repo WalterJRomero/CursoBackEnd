@@ -11,12 +11,15 @@
 <div class="container justify-content-center align-item-center">
     <div class="row justify-content-center">
         {{#each products}}
-            <div class="card m-5 m-3 shadow p-3 bg-white rounded" style="width: 18rem;">
-                <img class="card-img-top mt-2" src="{{this.thumbnail}}" alt="Card image cap">            
+            <div class="card m-3 shadow p-3 bg-white rounded" style="max-width: 20rem;">
+                <img class="card-img-top mt-2 align-self-center" src="{{this.thumbnail}}" alt="Card image cap" style="max-width: 10rem;height:10rem">            
                 <div class="card-body">
                     <h5 class="card-title text-center">{{this.title}}</h5>
-                    <p class="card-text">Precio: ${{this.price}}</p> 
+                    <p class="card-text">Descripción: {{this.description}}</p> 
                     <p class="card-text">Product id: {{this.id}}</p>                            
+                     <p class="card-text">Product Code: {{this.code}}</p>
+                    <p class="card-text">Stock: {{this.stock}}</p>  
+                    <p class="card-text">Precio: ${{this.price}}</p>
                 </div>
             </div>
         {{/each}}

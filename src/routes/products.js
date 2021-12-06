@@ -1,8 +1,9 @@
 import express from 'express';
 import Conteiner from '../classes/Conteiner.js';
-import upload from '../services/upload.js';
+// import upload from '../services/upload.js';
 import __dirname from '../utils.js';
 import {io} from '../server.js'
+import { authMiddleware } from '../utils.js';
 
 const router = express.Router();
 const PATH = __dirname+'/files/productsList.json';
@@ -25,15 +26,19 @@ router.get('/:id',async (req,res)=>{
 })
 
 // POST sin upload
-router.post('/',async (req,res)=>{    
-    let newProduct = req.body;    
-    let result = await conteiner.save(newProduct); 
-    res.send(result)      
-    if (result.status==="success"){
-        conteiner.getAll().then(result=>{
-            io.emit('updateProducts',result)
-        })
-    }
+router.post('/',authMiddleware,async (req,res)=>{      
+    // if (req.auth){        
+        let newProduct = req.body;    
+        let result = await conteiner.save(newProduct); 
+        res.send(result)      
+        if (result.status==="success"){
+            conteiner.getAll().then(result=>{
+                io.emit('updateProducts',result)
+            })
+        }
+    // } else {
+    //     console.log(`Status ${res.statusMessage} en method POST, status code: ${res.statusCode} `)
+    // }
 })
 
 //POST CON upload
@@ -47,18 +52,19 @@ router.post('/',async (req,res)=>{
 // })
 
 // PUT
-router.put('/:id',async (req,res)=>{    
-        let idReq = parseInt(req.params.id);
+router.put('/:id',authMiddleware,async (req,res)=>{           
+    let idReq = parseInt(req.params.id);
     let upProduct = req.body;
     let data = await conteiner.updateProduct(idReq,upProduct);
-    res.send(data)       
+    res.send(data) 
+             
 })
 
 // DELETE
-router.delete('/:id',async (req,res)=>{ 
+router.delete('/:id',authMiddleware,async (req,res)=>{ 
     let idReq = parseInt(req.params.id);
     let data = await conteiner.deletebyId(idReq);
-    res.send(data)
+    res.send(data)    
 })
 
 export default router

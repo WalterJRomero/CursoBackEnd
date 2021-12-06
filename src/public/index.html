@@ -13,33 +13,50 @@
 </head>
 <body>
     <main>
+        <div id="admin"></div>
         <section>
             <h1 class="text-center text-dark display-3 mt-5 text-decoration-underline">Bienvenido a La tiendita Japonesa</h1>
+            <div class="container text-center mt-4 mb-5 pt-4 text-dark rounded border border-secondary">
+                <h1 class="text-center">Lista de productos</h1>
+                <div id="productsTable"></div>
+            </div>
+        </section>
+        <section>
             <div class="container bg-success p-2 text-dark bg-opacity-10 rounded mt-5 mb-5 pb-5border border-secondary">       
-                <form id="productForm" name="productForm" enctype="multipart/form-data">
-                    <h1 class="text-center">Ingrese un producto</h1>
+                <form id="productForm" name="productForm" enctype="multipart/form-data">     
+                    <input type="hidden">
+                    <div class="h1 text-center">
+                        <label id="newProduct">Ingrese nuevo producto </label>
+                        <label class="hidden" id="updateProduct">Modifique producto</label>
+                    </div>               
                     <div class="mb-3">
                         <label for="title" class="form-label">Nombre del producto:</label>
-                        <input class="form-control" id="title" required>              
-                    </div>
+                        <input class="form-control" name="title" id="title" required>              
+                    </div>                    
                     <div class="mb-3">
-                        <label for="price" class="form-label">Precio</label>
-                        <input type="number" class="form-control" id="price" required>
+                        <label for="description" class="form-label">Descripción:</label>
+                        <input  class="form-control" id="description" required>
+                    </div>
+                    <div>
+                        <label for="code" class="form-label">Código:</label>
+                        <input type="text" class="form-control" id="code" required>
                     </div>
                     <div class="mb-3">
                         <label for="thumbnail" class="form-label">Foto URL: </label>
                         <input  class="form-control" id="thumbnail" required>
                     </div>
+                    <div>
+                        <label for="price" class="form-label">Precio:</label>
+                        <input type="number" class="form-control" id="price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock: </label>
+                        <input  type="number" class="form-control" id="stock" required>
+                    </div>
                     <button type="submit" class="btn btn-primary">Enviar</button>            
                     <button class="btn btn-success ml-2" onclick="location.href='/views/products'" value="Ver productos" >Ver productos guardados</button>              
                 </form>  
             </div> 
-        </section>
-        <section>
-            <div class="container text-center mt-4 mb-5 pt-4 text-dark rounded border border-secondary">
-                <h1 class="text-center">Lista de productos</h1>
-                <div id="productsTable"></div>
-            </div>
         </section>
         <section>
             <div class="container mt-4 mb-5 p-4 text-dark rounded border border-secondary bg-success p-2 text-dark bg-opacity-10">

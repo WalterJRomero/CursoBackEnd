@@ -1,10 +1,12 @@
 const socket = io();
+
 let message = document.getElementById('message');
 let email = document.getElementById('email');
 let chatBox = document.getElementById('chatBox');
 let button = document.getElementById('button');
-
+let idModify = null
 let botonScroll= $(".boton-scroll");
+
 
 //actualizacion de productos usando template handlebars
 socket.on('updateProducts',products=>{
@@ -20,6 +22,27 @@ socket.on('updateProducts',products=>{
             let div = document.getElementById('productsTable');
             div.innerHTML=html;
         })  
+})
+
+socket.on('auth',res=>{
+    let authentication = res;
+    if (res){
+        fetch('templates/auth.handlebars')
+            .then(string=>string.text())
+            .then(template=>{            
+                const authTemplate = Handlebars.compile(template);
+                const auth = {
+                    auth:authentication
+                }
+                const html = authTemplate(auth);
+                let div = document.getElementById('admin');
+                div.innerHTML=html;
+            })  
+    }else{
+        const html =``;
+        let div = document.getElementById('admin');
+        div.innerHTML=html
+    }
 })
 
 //funcion para validar el mail correcto, y luego poder visualizar el centro de mensajes
@@ -63,30 +86,84 @@ document.addEventListener('submit',sendForm);
 function sendForm(e){
     e.preventDefault();
     let newTitle= document.getElementById('title').value;
-    let newPrice= document.getElementById('price').value;
+    let newDescription= document.getElementById('description').value;
+    let newCode= document.getElementById('code').value;
     let newThumbnail= document.getElementById('thumbnail').value;
+    let newPrice= document.getElementById('price').value;
+    let newStock= document.getElementById('stock').value;
     let newForm ={
         title:newTitle,
+        description:newDescription,
+        code:newCode,
+        thumbnail:newThumbnail,
         price:newPrice,
-        thumbnail:newThumbnail
+        stock:newStock
     } 
-    fetch('http://localhost:8080/api/products',{
-        method:'POST',      
-        headers: { 'Content-Type': 'application/json' },        
-        body:JSON.stringify(newForm)       
-    }).then(response=>{
-        return response.json();
-    }).then(json=>{
-        Swal.fire({
-            title:'Carga de producto realizada',
-            text:json.message,
-            icon:'success',
-            timer:2000,
+    if (!idModify) {
+        fetch('http://localhost:8080/api/products',{
+            method:'POST',      
+            headers: { 'Content-Type': 'application/json' },        
+            body:JSON.stringify(newForm)       
+        }).then(response=>{
+            return response.json();
+        }).then(json=>{    
+            
+            if (json.status==="success"){
+                Swal.fire({                
+                    title:'Carga de producto realizada',
+                    text:json.message,
+                    icon:'success'                
+                })
+                .then(res=>{
+                    location.href='/'
+                })
+            }else if (json.error===-2){
+                Swal.fire(               
+                    'No se pudo agregar producto!',
+                    'No esta autorizado para esta operación.',
+                    'error',           
+                ).then(res=>{
+                    location.href='/'
+                })
+            } else {
+                Swal.fire({                
+                    title:'Producto existente',
+                    text:json.message,
+                    icon:'error',            
+                })
+            }
         })
-        // .then(res=>{
-        //     location.href='/'
-        // })
-    })
+    } else {
+        fetch(`http://localhost:8080/api/products/${idModify}`,{
+            method:'PUT',      
+            headers: { 'Content-Type': 'application/json' },        
+            body:JSON.stringify(newForm)       
+        }).then(response=>{
+            return response.json();
+        }).then(json=>{                
+            if (json.error===-2){
+                Swal.fire(                
+                    'No se pudo modificar el producto!',
+                    'No esta autorizado para esta operación.',
+                    'error',           
+                )
+                .then(res=>{
+                    location.href='/'
+                })
+
+            } else {
+                Swal.fire(               
+                    'Producto modificado!',
+                    'El producto fue modificado correctamente.',
+                    'success'               
+                )
+                .then(res=>{
+                    location.href='/'
+                })
+            }           
+            idModify = null           
+        })    
+    }    
 }
 
 //funcion para mostrar un boton y poder scrollear al top de la pagina
@@ -104,6 +181,61 @@ function btnScroll(boton){
         })
     })
 }
+
+function deleteProd(id){
+    Swal.fire({
+        title: 'Estas seguro de eliminar el producto?',
+        text: "Esto no se puede revertir",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, eliminar producto!'
+    })
+    .then((result) => {
+        if (result.isConfirmed) {
+            fetch(`http://localhost:8080/api/products/${id}`,{
+                method:'DELETE',                  
+            })
+            .then(res=>
+                {if (res.status===403){                    
+                    Swal.fire(
+                        'No se pudo eliminar el producto!',
+                        'No esta autorizado para esta operación.',
+                        'error'
+                        )
+                    }else {                    
+                        Swal.fire(
+                            'Producto eliminado!',
+                            'El producto fue eliminado correctamente.',
+                            'success'
+                        )
+                    }
+                }
+            )            
+        }
+    })    
+}
+
+function modifyProd(idProduct){
+  
+    fetch(`http://localhost:8080/api/products/${idProduct}`,{
+        method:'GET'           
+    })
+    .then(response=>{return response.json()})
+    .then(data=>{
+        let {id,title,description,code,thumbnail,price,stock} = data        
+        document.getElementById('title').value= title;
+        document.getElementById('description').value = description;
+        document.getElementById('code').value= code;
+        document.getElementById('thumbnail').value= thumbnail;
+        document.getElementById('price').value = price;
+        document.getElementById('stock').value = stock;
+        $('#updateProduct').removeClass('hidden') 
+        $('#newProduct').addClass('hidden')   
+        idModify=id     
+    })       
+}       
 
 // llamada de la funcion
 btnScroll(botonScroll);

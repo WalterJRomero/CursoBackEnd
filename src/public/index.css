@@ -29,5 +29,6 @@ h1 {
   
 .hidden {
   opacity: 0;
-  visibility: hidden; }
+  visibility: none; 
+  display: none;}
 
