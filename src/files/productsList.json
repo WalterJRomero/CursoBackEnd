@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": 1,
+    "timestamp": "2021-12-06T01:32:42.941Z",
+    "title": "Nissin Cup Noodle Tom Yum 3-Pack",
+    "description": "Tom Yum Kung Noodles from the Cup Noodle Ethnic Series that delivers authentic delicious food.",
+    "code": "123311",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/NIS9b_860x.jpg?v=1634331568",
+    "price": "1333",
+    "stock": "123"
+  },
+  {
+    "id": 2,
+    "timestamp": "2021-12-07T00:24:50.894Z",
+    "title": "POST producto nuevo",
+    "description": "Tom Yum Kung Noodles from the Cup Noodle Ethnic Series that delivers authentic delicious food.",
+    "code": "123311",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/NIS9b_860x.jpg?v=1634331568",
+    "price": "1333",
+    "stock": "123"
+  },
+  {
+    "timestamp": "2021-12-06T01:32:42.941Z",
+    "title": "POST producto modificado",
+    "description": "test.",
+    "code": "123311",
+    "thumbnail": "https://cdn.shopify.com/s/files/1/0231/1294/1648/products/NIS9b_860x.jpg?v=1634331568",
+    "price": "1333",
+    "stock": "123",
+    "id": 3
+  }
+]

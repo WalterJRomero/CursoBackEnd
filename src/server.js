@@ -4,6 +4,7 @@ import cors from 'cors';
 import Conteiner from './classes/Conteiner.js';
 import Chats from './classes/chats.js';
 import router from './routes/products.js';
+import cartRouter from './routes/cart.js'
 // import upload from './services/upload.js';
 import {Server} from 'socket.io'
 import __dirname from './utils.js'
@@ -20,7 +21,7 @@ const server = app.listen(PORT,()=>{
     console.log('Server listening on port: '+PORT)
 })
 export const io = new Server(server);
-export const admin=false;
+export const admin=true;
 
 app.engine('handlebars',engine());
 app.set('views',__dirname+'/views');
@@ -39,6 +40,7 @@ app.use((req,res,next)=>{
 
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
+app.use('/api/cart',cartRouter)
 
 //para subir varios archivos
 // app.post('/api/uploadfile',upload.fields([

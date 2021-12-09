@@ -15,15 +15,15 @@ class Conteiner{
             }else{
                 let timestamp = Date.now();
                 let time = new Date(timestamp);
-                let prodObj = {
-                    id:nuevoId,
+                let prodObj = {                    
                     timestamp:time,
                     title:product.title,
                     description:product.description,
                     code:product.code,
                     thumbnail:product.thumbnail,
                     price:product.price,
-                    stock:product.stock
+                    stock:product.stock,
+                    id:nuevoId,
                 }                                
                 products.push(prodObj);
                 try{
@@ -37,15 +37,15 @@ class Conteiner{
         }catch{             
             let timestamp = Date.now();
             let time = new Date(timestamp);
-            let prodObj = {
-                id:1,
+            let prodObj = {                
                 timestamp:time,
                 title:product.title,
                 description:product.description,
                 code:product.code,
                 thumbnail:product.thumbnail,
                 price:product.price,
-                stock:product.stock
+                stock:product.stock,
+                id:1,
             }    
             try {
                 await fs.promises.writeFile(this.fileName,JSON.stringify([prodObj]),null,2) 

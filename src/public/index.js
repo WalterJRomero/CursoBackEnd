@@ -100,7 +100,7 @@ function sendForm(e){
         stock:newStock
     } 
     if (!idModify) {
-        fetch('http://localhost:8080/api/products',{
+        fetch('/api/products',{
             method:'POST',      
             headers: { 'Content-Type': 'application/json' },        
             body:JSON.stringify(newForm)       
@@ -134,7 +134,7 @@ function sendForm(e){
             }
         })
     } else {
-        fetch(`http://localhost:8080/api/products/${idModify}`,{
+        fetch(`/api/products/${idModify}`,{
             method:'PUT',      
             headers: { 'Content-Type': 'application/json' },        
             body:JSON.stringify(newForm)       
@@ -194,7 +194,7 @@ function deleteProd(id){
     })
     .then((result) => {
         if (result.isConfirmed) {
-            fetch(`http://localhost:8080/api/products/${id}`,{
+            fetch(`/api/products/${id}`,{
                 method:'DELETE',                  
             })
             .then(res=>
@@ -209,17 +209,14 @@ function deleteProd(id){
                             'Producto eliminado!',
                             'El producto fue eliminado correctamente.',
                             'success'
-                        )
-                    }
-                }
-            )            
-        }
-    })    
+                        )}
+                })            
+        }})    
 }
 
 function modifyProd(idProduct){
   
-    fetch(`http://localhost:8080/api/products/${idProduct}`,{
+    fetch(`/api/products/${idProduct}`,{
         method:'GET'           
     })
     .then(response=>{return response.json()})

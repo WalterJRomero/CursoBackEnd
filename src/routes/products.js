@@ -27,18 +27,15 @@ router.get('/:id',async (req,res)=>{
 
 // POST sin upload
 router.post('/',authMiddleware,async (req,res)=>{      
-    // if (req.auth){        
-        let newProduct = req.body;    
-        let result = await conteiner.save(newProduct); 
-        res.send(result)      
-        if (result.status==="success"){
-            conteiner.getAll().then(result=>{
-                io.emit('updateProducts',result)
-            })
-        }
-    // } else {
-    //     console.log(`Status ${res.statusMessage} en method POST, status code: ${res.statusCode} `)
-    // }
+        
+    let newProduct = req.body;    
+    let result = await conteiner.save(newProduct); 
+    res.send(result)      
+    if (result.status==="success"){
+        conteiner.getAll().then(result=>{
+            io.emit('updateProducts',result)
+        })
+    }    
 })
 
 //POST CON upload
