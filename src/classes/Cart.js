@@ -78,42 +78,68 @@ class Cart{
         }
     }
 
+    //agrega un producto (solo id) al carrito elegido
+    async addProductToCart(cartId,productId){        
+        try{
+            let data = await fs.promises.readFile(this.fileName,'utf-8');
+            let newCartArray = JSON.parse(data); 
+            if(!newCartArray.some(cart=>cart.id===cartId)) return {status:"error", message:"No hay carrito con id elegido"}
+            let result = newCartArray.map(cart=>{                
+                if(cart.id===cartId){     
+                    let cartProduct = cart                   
+                    cartProduct = Object.assign(cartProduct,{timestamp:cartProduct.timestamp,products:[...cartProduct.products,productId]})                    
+                    cartProduct = Object.assign({...cartProduct,id:cart.id})                    
+                    return cartProduct                    
+                }else{                                 
+                    return cart;
+                }
+            })
+            try{
+                await fs.promises.writeFile(this.fileName,JSON.stringify(result,null,2));
+                return {status:"success", message:"Carrito actualizado"}
+            }catch{
+                return {status:"error", message:"Error al actualizar el carrito"}
+            }
+        }catch(err){
+            return {status:"error",message:"Fallo al agregar un producto al carrito"}
+        }
+    }
 
-    //INCOMPLETO
-    // async addProductToCart(id,cartProduct){        
-    //     try{
-    //         let data = await fs.promises.readFile(this.fileName,'utf-8');
-    //         let newCartArray = JSON.parse(data); 
-    //        // if(!newCartArray.some(cart=>cart.id===id)) return {status:"error", message:"No hay un producto con el id elegido"}
-    //         let result = [...newCartArray[0].products,cartProduct]
-            
-            
-    //         // let result = newCartArray[0].map(cart=>{                
-    //         //                 if(newCartArray.id===id){                     
-    //         //         console.log('encontre el producto')
-    //         //         // cartProduct = Object.assign(cartProduct,{products:[...cartProduct]})                    
-    //         //         // cartProduct = Object.assign({...cartProduct,id:product.id})                    
-    //         //         return cartProduct                    
-    //         //     }else{                   
-    //         //         return cart;
-    //         //     }
-    //         // })
-    //         try{
-    //             await fs.promises.writeFile(this.fileName,JSON.stringify(result,null,2));
-    //             return {status:"success", message:"Producto actualizado"}
-    //         }catch{
-    //             return {status:"error", message:"Error al actualizar el producto"}
-    //         }
-    //     }catch(err){
-    //         return {status:"error",message:"Fallo al agregar un producto al carrito"}
-    //     }
-    // }
+    //borra producto de un carrito
+    async delProductById(cartId,productId){
+        try{
+            let data = await fs.promises.readFile(this.fileName,'utf-8');
+            let carts = JSON.parse(data);  
+            let result = carts.map(cart=>{               
+                if(cart.id===cartId && cart.products.length>0){     
+                    let cartProduct = cart     
+                    let itemfind = cart.products.filter((p=>p!=productId))
+                    cartProduct = Object.assign(cartProduct,{timestamp:cartProduct.timestamp,products:itemfind})                    
+                    cartProduct = Object.assign({...cartProduct,id:cart.id})                    
+                    return cartProduct                    
+                }else{
+                    return {status:"error", message:"Error al eliminar producto del carrito"}                                 
+                    
+                }                     
+                })
+            try{
+                await fs.promises.writeFile(this.fileName,JSON.stringify(result,null,2));
+                return {status:"success", message:"Producto eliminado del carrito"}
+            }catch{
+                return {status:"error", message:"Error al eliminar producto del carrito"}
+            }
+                  
+        }catch(err){
+            return {status:"error",message:err}
+        }
+    }
+
     
     //borra un carrito por su id
     async deleteCartbyId(numberId){
         try{
-            let data = await fs.promises.readFile(this.fileName,'utf-8');
             let newCart = JSON.parse(data); 
+            let data = await fs.promises.readFile(this.fileName,'utf-8');
             let cart = newCart.find(res=>res.id===numberId);
             if (cart){
                 let newCartUpdate = newCart.filter((p)=>p.id!=numberId)                           
