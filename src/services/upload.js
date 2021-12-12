@@ -1,6 +1,7 @@
 import multer from 'multer';
 import __dirname from '../utils.js';
 
+//se podría utilizar para adjuntar archivos a las caracteristicas del producto, actualmente se ingresa una url para la imagen, no se sube un archivo
 const storage = multer.diskStorage({
     destination:function(req,file,cb){        
         //con upload

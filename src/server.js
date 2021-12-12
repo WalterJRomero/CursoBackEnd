@@ -95,7 +95,7 @@ io.on('connection',async socket=>{
     })
 })
 
-app.get('*', function(req, res){
+app.use('/*', function(req, res){
     let error = {
         route:req.params[0],
         method:req.method,

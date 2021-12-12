@@ -4,7 +4,7 @@ class Chats{
     constructor(fileName){
         this.fileName=fileName
     }
-    
+    //guarda los chats en un archivo
     async saveChats(chat){       
         try{
             let data =await fs.promises.readFile(this.fileName,'utf-8');            
@@ -42,7 +42,7 @@ class Chats{
             }
         }
     }
-  
+    //obtiene los chats desde el archivo json
     async getAllChats(){
         try{
             let data = await fs.promises.readFile(this.fileName,'utf-8');            
@@ -56,7 +56,7 @@ class Chats{
             return {status:"error", message:err}
         }
     }
-
+    //borra el archivo de chats, lo deja vacío
     async deleteAllChats(){
         try{
             await fs.promises.writeFile(this.fileName,JSON.stringify(''),null,2);

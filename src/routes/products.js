@@ -9,12 +9,12 @@ const router = express.Router();
 const PATH = __dirname+'/files/productsList.json';
 const conteiner = new Conteiner(PATH);
 
-//GET
+//GET para buscar todos los productos
 router.get('/',async (req,res)=>{    
     let {data} = await conteiner.getAll();
     res.send(data)
 })
-
+//GET para buscar un producto por su id
 router.get('/:id',async (req,res)=>{   
     let idReq = parseInt(req.params.id);    
     let {data} = await conteiner.getById(idReq);       
@@ -25,7 +25,7 @@ router.get('/:id',async (req,res)=>{
     }
 })
 
-// POST sin upload
+//POST para guardar un producto y luego visualizar el id asignado
 router.post('/',authMiddleware,async (req,res)=>{      
         
     let newProduct = req.body;    
@@ -38,7 +38,7 @@ router.post('/',authMiddleware,async (req,res)=>{
     }    
 })
 
-//POST CON upload
+//POST CON upload, se puede utilizar para adjuntar archivos
 // router.post('/',upload.single('thumbnail'),async (req,res)=>{    
 //     let newProduct = req.body;           
 //     let thumbnail = req.protocol+"://"+req.hostname+":8080"+"/images"+req.file.filename;
@@ -48,7 +48,7 @@ router.post('/',authMiddleware,async (req,res)=>{
 //     res.send(result)      
 // })
 
-// PUT
+// PUT permite modificar algun dato del producto
 router.put('/:id',authMiddleware,async (req,res)=>{           
     let idReq = parseInt(req.params.id);
     let upProduct = req.body;
@@ -57,7 +57,7 @@ router.put('/:id',authMiddleware,async (req,res)=>{
              
 })
 
-// DELETE
+// DELETE borra un producto por su id
 router.delete('/:id',authMiddleware,async (req,res)=>{ 
     let idReq = parseInt(req.params.id);
     let data = await conteiner.deletebyId(idReq);

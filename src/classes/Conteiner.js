@@ -4,7 +4,7 @@ class Conteiner{
     constructor(fileName){
         this.fileName=fileName
     }
-    
+    // metodo utilizado para guardar un producto y devolver el id, el producto es ingresado como un {}
     async save(product){         
         try{
             let data =await fs.promises.readFile(this.fileName,'utf-8');
@@ -56,7 +56,7 @@ class Conteiner{
             }
         }
     }
-  
+    //este metodo se utiliza para buscar un producto por su id
     async getById(numberId){
         try{            
             let data = await fs.promises.readFile(this.fileName,'utf-8');            
@@ -71,7 +71,7 @@ class Conteiner{
             return {status:"error",message:err}
         }
     }
-
+    //metodo para devolver todos los productos del archivo guardado
     async getAll(){
         try{
             let data = await fs.promises.readFile(this.fileName,'utf-8');
@@ -85,7 +85,7 @@ class Conteiner{
             return {status:"error", message:err}
         }
     }
-
+    //metodo utilizado para actualizar caracteristicas del producto, se requiere ID y el producto
     async updateProduct(id,productSelect){
         try{
             let data = await fs.promises.readFile(this.fileName,'utf-8');
@@ -111,7 +111,7 @@ class Conteiner{
             return {status:"error",message:"Fallo al actualizar el usuario"}
         }
     }
-    
+    //permite borrar un producto por su numero de id
     async deletebyId(numberId){
         try{
             let data = await fs.promises.readFile(this.fileName,'utf-8');
@@ -128,7 +128,7 @@ class Conteiner{
             return {status:"error",message:err}
         }
     }
-    
+    // borra o pone en vacío el archivo de productos
     async deleteAll(){
         try{
             await fs.promises.writeFile(this.fileName,JSON.stringify(''),null,2);
