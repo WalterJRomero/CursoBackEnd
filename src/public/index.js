@@ -23,7 +23,7 @@ socket.on('updateProducts',products=>{
             div.innerHTML=html;
         })  
 })
-
+//si el usuario esta logueado como administrador se habilita el MODO ADMINISTRADOR
 socket.on('auth',res=>{
     let authentication = res;
     if (res){
@@ -209,7 +209,12 @@ function deleteProd(id){
                             'Producto eliminado!',
                             'El producto fue eliminado correctamente.',
                             'success'
-                        )}
+                        )
+                        .then(res=>{
+                            location.href='/'
+                        })
+                    }
+                        
                 })            
         }})    
 }

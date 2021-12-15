@@ -129,14 +129,14 @@ class Conteiner{
         }
     }
     // borra o pone en vacío el archivo de productos
-    async deleteAll(){
-        try{
-            await fs.promises.writeFile(this.fileName,JSON.stringify(''),null,2);
-            return {status:"success",message:"Todos los productos fueron eliminados"}         
-        }catch(err){
-            return {status:"error",message:err}
-        }
-    }
+    // async deleteAll(){
+    //     try{
+    //         await fs.promises.writeFile(this.fileName,JSON.stringify(''),null,2);
+    //         return {status:"success",message:"Todos los productos fueron eliminados"}         
+    //     }catch(err){
+    //         return {status:"error",message:err}
+    //     }
+    // }
 }
 
 export default Conteiner

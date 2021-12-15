@@ -1,19 +1,21 @@
 import express from 'express';
 import {engine} from 'express-handlebars';
 import cors from 'cors';
-import Conteiner from './classes/Conteiner.js';
+// import Conteiner from './classes/Conteiner.js';
 import Chats from './classes/Chats.js';
 import router from './routes/products.js';
 import cartRouter from './routes/cart.js'
-// import upload from './services/upload.js';
 import {Server} from 'socket.io'
 import __dirname from './utils.js'
 import moment from 'moment';
 import { authMiddleware } from './utils.js';
+import productConteiner from './services/productConteiner.js';
+import chatConteiner from './services/chatConteiner.js'
 
-const PATH = __dirname+'/files/productsList.json';
+
+const productService = new productConteiner();
+const chatService = new chatConteiner();
 const CHATSPATH = __dirname+'/files/chatsHistorical.json';
-const conteiner = new Conteiner(PATH);
 const chats = new Chats(CHATSPATH);
 const app = express();
 const PORT = process.env.PORT||8080;
@@ -42,25 +44,8 @@ app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
 app.use('/api/cart',cartRouter)
 
-//para subir varios archivos
-// app.post('/api/uploadfile',upload.fields([
-    //     {
-        //         name:'file', maxCount:1
-        //     },
-        //     {
-            //         name:"documents", maxCount:3
-            //     }
-            // ]),(req,res)=>{
-                //     const files = req.files;
-                //     console.log(files);
-                //     if(!files||files.length===0){
-                    //         res.status(500).send({messsage:"No se subió archivo"})
-                    //     }
-                    //     res.send(files);
-// })
-
 app.get('/views/products',(req,res)=>{
-    conteiner.getAll().then(result=>{
+    productService.getAll().then(result=>{
         let {data}=result;        
         let preparedObj={
             products : data
@@ -72,25 +57,28 @@ app.get('/views/products',(req,res)=>{
 //muestra los productos que tengo actualmente
 io.on('connection',async socket=>{
     console.log(`Socket ${socket.id} connected`);
-    let products = await conteiner.getAll();
+    let products = await productService.getAll();
     socket.emit('updateProducts',products)
    
 })
-
+//muestra si estas logueado como admin
 io.on('connection',async socket=>{    
     let auth = admin;
     socket.emit('auth',auth)   
 })
 
 //Chats en pantalla-----------------------------------------
-let {chatsData} = chats.getAllChats()
+
+// const {chatsData} = await chats.getAllChats()
+let {chatsData} = await chatService.getAllChats()
 
 io.on('connection',async socket=>{    
     socket.emit('messagelog',chatsData)    
     socket.on('message',async data=>{        
         let date = moment().format('DD/MM/YYYY HH:mm:ss')        
         data.date = date        
-        await chats.saveChats(data)    
+        await chatService.saveChats(data)    
+        // await chats.saveChats(data)
         io.emit('messagelog',chatsData);
     })
 })
