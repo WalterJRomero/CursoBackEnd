@@ -46,27 +46,22 @@ socket.on('auth',res=>{
 })
 
 //funcion para validar el mail correcto, y luego poder visualizar el centro de mensajes
-function pruebaEmail(valor){
+function pruebaEmail(valor){    
 	re=/^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
 	if(!re.exec(valor)){		       
         $("#chatBox").slideUp(1000);
-        button.disabled=false
+        button.disabled=false        
 	}else {
         $("#chatBox").slideDown(1000);
         button.disabled = true;
-        email.disabled = true;
+        email.disabled = true;   
+
     }
 }
-//funcion para enviar un mensaje con el button "enviar mensaje"
-function sendMessage(){
-    socket.emit('message',{email:email.value,message:message.value}); 
-    message.value=""  
-}
-
 //muestro en el div "log" la info obtenida desde el socket, "messagelog" es quien envia la info
-socket.on('messagelog',data=>{        
-    let p = document.getElementById('log')        
-    if (data){
+socket.on('messagelog', data=>{        
+    let p = document.getElementById('log')         
+    if (data){        
         let messages = data.map(message=>{
         return `<div class="container-fluid bg-light bg-gradient mb-1 ">
                     <span class="text-primary fw-bold">${message.email} </span>
@@ -79,6 +74,12 @@ socket.on('messagelog',data=>{
        p.innerHTML= `<div><span>Aún no hay chats</span></div>`
     }
 })
+//funcion para enviar un mensaje con el button "enviar mensaje"
+function sendMessage(){
+    socket.emit('message',{email:email.value,message:message.value}); 
+    message.value=""     
+}
+
 
 //envio de formulario para la carga de productos
 document.addEventListener('submit',sendForm);

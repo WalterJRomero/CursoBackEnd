@@ -6,10 +6,9 @@ export default class chatConteiner{
             if(!result){
                 db.schema.createTable('chats',table=>{
                     table.increments();
-                    table.string('email').notNullable();
-                    table.string('date').notNullable();
-                    table.string('message').notNullable();                    
-                    table.timestamps(true,true);
+                    table.string('email');
+                    table.string('date');
+                    table.string('message');                    
                 }).then(result=>{
                     console.log('Tabla de chats creada')
                 })
@@ -21,8 +20,8 @@ export default class chatConteiner{
         try {            
             let exist = await db.table('chats').select();                  
             if (!exist) return {status:"error",message:"No existe la tabla de chats"};
-            let result = await db.table('chats').insert(chat);
-            return {status:"success",message:"chat agregado"}
+            let result = await db.table('chats').insert(chat);            
+            return {status:"success",message:"chat agregado",data:result}
         }catch(error){
             return {status:'error', message:error}
         }
@@ -30,8 +29,8 @@ export default class chatConteiner{
 
     getAllChats = async () =>{        
         try {
-            let chat = await db.table('chats').select();                
-            return {status:'success',chatsData:chat}
+            let chat = await db.select().table('chats');                            
+            return {status:'success',data:chat}
         }catch(error){
             return {status:'error', message:error}
         }

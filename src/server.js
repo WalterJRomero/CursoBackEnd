@@ -1,22 +1,17 @@
 import express from 'express';
 import {engine} from 'express-handlebars';
 import cors from 'cors';
-// import Conteiner from './classes/Conteiner.js';
 import Chats from './classes/Chats.js';
 import router from './routes/products.js';
 import cartRouter from './routes/cart.js'
 import {Server} from 'socket.io'
 import __dirname from './utils.js'
 import moment from 'moment';
-import { authMiddleware } from './utils.js';
 import productConteiner from './services/productConteiner.js';
 import chatConteiner from './services/chatConteiner.js'
 
-
 const productService = new productConteiner();
 const chatService = new chatConteiner();
-const CHATSPATH = __dirname+'/files/chatsHistorical.json';
-const chats = new Chats(CHATSPATH);
 const app = express();
 const PORT = process.env.PORT||8080;
 const server = app.listen(PORT,()=>{
@@ -51,7 +46,7 @@ app.get('/views/products',(req,res)=>{
             products : data
         }
         res.render('products',preparedObj);
-    })    
+    })   
 })
 
 //muestra los productos que tengo actualmente
@@ -68,19 +63,18 @@ io.on('connection',async socket=>{
 })
 
 //Chats en pantalla-----------------------------------------
+  
 
-// const {chatsData} = await chats.getAllChats()
-let {chatsData} = await chatService.getAllChats()
-
-io.on('connection',async socket=>{    
-    socket.emit('messagelog',chatsData)    
-    socket.on('message',async data=>{        
+io.on('connection',async socket=>{     
+    let {data} = await chatService.getAllChats()    
+    socket.emit('messagelog',data)        
+    socket.on('message',async res=>{             
         let date = moment().format('DD/MM/YYYY HH:mm:ss')        
-        data.date = date        
-        await chatService.saveChats(data)    
-        // await chats.saveChats(data)
-        io.emit('messagelog',chatsData);
-    })
+        res.date = date                 
+        let result = await chatService.saveChats(res)         
+        let chatData = await chatService.getAllChats()        
+        io.emit('messagelog',chatData.data)       
+    })             
 })
 
 app.use('/*', function(req, res){
