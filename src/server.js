@@ -1,17 +1,21 @@
 import express from 'express';
 import {engine} from 'express-handlebars';
 import cors from 'cors';
-import Chats from './classes/Chats.js';
 import router from './routes/products.js';
 import cartRouter from './routes/cart.js'
 import {Server} from 'socket.io'
 import __dirname from './utils.js'
 import moment from 'moment';
-import productConteiner from './services/productConteiner.js';
+import {products} from './daos/index.js';
 import chatConteiner from './services/chatConteiner.js'
+// import productConteiner from './services/productConteiner.js';
+// import Conteiner from './contenedores/Conteiner.js';
+// import Cart from './contenedores/Cart.js';
 
-const productService = new productConteiner();
+// const productService = new productConteiner();
 const chatService = new chatConteiner();
+// const PATH = __dirname+'/files/productsList.json';
+// const conteiner = new Conteiner(PATH);
 const app = express();
 const PORT = process.env.PORT||8080;
 const server = app.listen(PORT,()=>{
@@ -40,7 +44,9 @@ app.use('/api/products',router);
 app.use('/api/cart',cartRouter)
 
 app.get('/views/products',(req,res)=>{
-    productService.getAll().then(result=>{
+    products.getAll().then(result=>{
+    // conteiner.getAll().then(result=>{
+    // productService.getAll().then(result=>{
         let {data}=result;        
         let preparedObj={
             products : data
@@ -52,19 +58,20 @@ app.get('/views/products',(req,res)=>{
 //muestra los productos que tengo actualmente
 io.on('connection',async socket=>{
     console.log(`Socket ${socket.id} connected`);
-    let products = await productService.getAll();
+    let products = await products.getAll();
+    // let products = await conteiner.getAll();
+    // let products = await productService.getAll();
     socket.emit('updateProducts',products)
    
 })
+
 //muestra si estas logueado como admin
 io.on('connection',async socket=>{    
     let auth = admin;
     socket.emit('auth',auth)   
 })
 
-//Chats en pantalla-----------------------------------------
-  
-
+//Chats en pantalla-----------------------------------------  
 io.on('connection',async socket=>{     
     let {data} = await chatService.getAllChats()    
     socket.emit('messagelog',data)        
