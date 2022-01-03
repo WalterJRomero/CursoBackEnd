@@ -1,6 +1,6 @@
 let products;
 let carts;
-let persistence = 'fb';
+let persistence = 'fileSystem';
 
 switch(persistence){
     case "fileSystem":

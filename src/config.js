@@ -26,8 +26,8 @@ export default{
     mongo:{        
         baseUrl:'mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/ecommerce?retryWrites=true&w=majority'
     },
-    // fb:{
-    //     baseUrl:'https://ecommerce-c2058.firebaseio.com'
-    // }
+    fb:{
+        baseUrl:'https://ecommerce-c2058.firebaseio.com'
+    }
 }
 

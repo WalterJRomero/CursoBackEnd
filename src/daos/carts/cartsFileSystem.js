@@ -49,11 +49,11 @@ export default class CartsFileSystem extends FileConteiner{
     }
     
     //devuelve todos los productos del carrito elegido
-    async getProducts(numberId){
+    async getProducts(cartId_request){
         try{            
             let data = await fs.promises.readFile(this.url,'utf-8');            
             let cartProducts = JSON.parse(data);            
-            let prod = cartProducts.find(prod=>prod.id===numberId);                      
+            let prod = cartProducts.find(prod=>prod.id===cartId_request);                      
             if (prod){                
                 if(prod.products.length>0){
                     return {status:"success",data:prod.products}
@@ -68,22 +68,25 @@ export default class CartsFileSystem extends FileConteiner{
         }
     }
     //agrega un producto (solo id) al carrito elegido
-    async addProductToCart(cartId,productId){        
+    async addProductToCart(cartId_request,productId){        
         try{
             let dataSaved = await fs.promises.readFile(this.url,'utf-8');
             let newCartArray = JSON.parse(dataSaved); 
-            if(!newCartArray.some(cart=>cart.id===cartId)) {
+            if(!newCartArray.some(cart=>cart.id===cartId_request)) {
                 return {status:"error", message:"No existe un carrito con el id elegido"}
             }
-            let duplicate = newCartArray.find(cart=>cart.id===cartId);            
+            let duplicate = newCartArray.find(cart=>cart.id===cartId_request);            
             let productFind = duplicate.products.find(id=>id===productId);            
             if (productFind) {
                 return {status:"error", message:"Producto ya agregado al carrito, no es posible añadirlo nuevamente "}
             }         
             let result = newCartArray.map(cart=>{                
-                if(cart.id===cartId){     
+                if(cart.id===cartId_request){     
                     let cartProduct = cart;                   
-                    cartProduct = Object.assign(cartProduct,{timestamp:cartProduct.timestamp,products:[...cartProduct.products,productId]});                    
+                    cartProduct = Object.assign(cartProduct,{
+                        timestamp:cartProduct.timestamp,
+                        products:[...cartProduct.products,
+                        productId]});                    
                     cartProduct = Object.assign({...cartProduct,id:cart.id});                   
                     return cartProduct                    
                 }else{                                 
@@ -102,14 +105,14 @@ export default class CartsFileSystem extends FileConteiner{
     }
 
     //borra producto de un carrito
-    async delProductById(cartId,productId){
+    async delProductById(cartId_request,productId_request){
         try{
             let data = await fs.promises.readFile(this.url,'utf-8');
             let carts = JSON.parse(data);            
             let result = carts.map(cart=>{                
-                if(cart.id===cartId){                       
+                if(cart.id===cartId_request){                       
                     let cartProduct = cart;                         
-                    let itemfind = cart.products.filter((p=>p!=productId));
+                    let itemfind = cart.products.filter((p=>p!=productId_request));
                     cartProduct = Object.assign(cartProduct,{timestamp:cartProduct.timestamp,products:itemfind});                    
                     cartProduct = Object.assign({...cartProduct,id:cart.id});     
                     return cartProduct                    
@@ -129,13 +132,13 @@ export default class CartsFileSystem extends FileConteiner{
     }
     
     //borra un carrito por su id
-    async deleteCartbyId(numberId){
+    async deleteCartbyId(cartId_request){
         try{
             let data = await fs.promises.readFile(this.url,'utf-8');
             let newCart = JSON.parse(data); 
-            let cart = newCart.find(res=>res.id===numberId);
+            let cart = newCart.find(res=>res.id===cartId_request);
             if (cart){
-                let newCartUpdate = newCart.filter((p)=>p.id!=numberId)                           
+                let newCartUpdate = newCart.filter((p)=>p.id!=cartId_request)                           
                 await fs.promises.writeFile(this.url,JSON.stringify(newCartUpdate),null,2)                 
                 return {status:"success",message:"Se eliminó correctamente el carrito elegido"} 
             }else{

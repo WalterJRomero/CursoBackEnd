@@ -3,11 +3,11 @@ import {engine} from 'express-handlebars';
 import cors from 'cors';
 import router from './routes/products.js';
 import cartRouter from './routes/cart.js'
-import {Server} from 'socket.io'
-import __dirname from './utils.js'
+import {Server} from 'socket.io';
+import __dirname from './utils.js';
 import moment from 'moment';
 import {products} from './daos/index.js';
-import chatConteiner from './services/chatConteiner.js'
+import chatConteiner from './services/chatConteiner.js';
 
 const chatService = new chatConteiner();
 const app = express();
@@ -35,7 +35,7 @@ app.use((req,res,next)=>{
 
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
-app.use('/api/cart',cartRouter)
+app.use('/api/cart',cartRouter);
 
 app.get('/views/products',(req,res)=>{
     products.getAll().then(result=>{
@@ -51,7 +51,7 @@ app.get('/views/products',(req,res)=>{
 io.on('connection',async socket=>{
     console.log(`Socket ${socket.id} connected`);
     let products = await products.getAll();  
-    socket.emit('updateProducts',products)   
+    socket.emit('updateProducts',products);   
 })
 
 //muestra si estas logueado como admin
@@ -62,17 +62,17 @@ io.on('connection',async socket=>{
 
 //Chats en pantalla-----------------------------------------  
 io.on('connection',async socket=>{     
-    let {data} = await chatService.getAllChats()    
-    socket.emit('messagelog',data)        
+    let {data} = await chatService.getAllChats();
+    socket.emit('messagelog',data);        
     socket.on('message',async res=>{             
-        let date = moment().format('DD/MM/YYYY HH:mm:ss')        
-        res.date = date                 
-        let result = await chatService.saveChats(res)         
-        let chatData = await chatService.getAllChats()        
-        io.emit('messagelog',chatData.data)       
+        let date = moment().format('DD/MM/YYYY HH:mm:ss');        
+        res.date = date;                 
+        let result = await chatService.saveChats(res);         
+        let chatData = await chatService.getAllChats();        
+        io.emit('messagelog',chatData.data);       
     })             
 })
-
+//capturo las rutas fuera de las que estan diseñadas
 app.use('/*', function(req, res){
     let error = {
         route:req.params[0],

@@ -4,27 +4,27 @@ import __dirname from '../../utils.js';
 
 export default class ProductsFileSystem extends FileConteiner{
     constructor(){
-        super('productsList.json');
+        super('productsList.json');//envio el nombre del archivo que tiene mis productos
     }
     
-    async save(product){         
+    async save(product_to_create){         
         try{
             let data =await fs.promises.readFile(this.url,'utf-8');
             let products =JSON.parse(data); 
             let nuevoId = products[products.length-1].id+1;
-            if (products.some(prod=>prod.title===product.title)){ 
+            if (products.some(prod=>prod.title===product_to_create.title)){ 
                 return {status:"error",message:"Producto existente"}
             }else{
                 let timestamp = Date.now();
                 let time = new Date(timestamp);
                 let prodObj = {                    
                     timestamp:time,
-                    title:product.title,
-                    description:product.description,
-                    code:product.code,
-                    thumbnail:product.thumbnail,
-                    price:product.price,
-                    stock:product.stock,
+                    title:product_to_create.title,
+                    description:product_to_create.description,
+                    code:product_to_create.code,
+                    thumbnail:product_to_create.thumbnail,
+                    price:product_to_create.price,
+                    stock:product_to_create.stock,
                     id:nuevoId,
                 }                                
                 products.push(prodObj);
@@ -41,12 +41,12 @@ export default class ProductsFileSystem extends FileConteiner{
             let time = new Date(timestamp);
             let prodObj = {                
                 timestamp:time,
-                title:product.title,
-                description:product.description,
-                code:product.code,
-                thumbnail:product.thumbnail,
-                price:product.price,
-                stock:product.stock,
+                title:product_to_create.title,
+                description:product_to_create.description,
+                code:product_to_create.code,
+                thumbnail:product_to_create.thumbnail,
+                price:product_to_create.price,
+                stock:product_to_create.stock,
                 id:1,
             }    
             try {
@@ -59,11 +59,11 @@ export default class ProductsFileSystem extends FileConteiner{
         }
     }
     //este metodo se utiliza para buscar un producto por su id
-    async getById(numberId){
+    async getById(productId_request){
         try{            
             let data = await fs.promises.readFile(this.url,'utf-8');            
             let products = JSON.parse(data);            
-            let prod = products.find(prod=>prod.id===numberId);            
+            let prod = products.find(prod=>prod.id===productId_request);            
             if (prod){
                 return {status:"success",data:prod}
             }else{
@@ -88,17 +88,22 @@ export default class ProductsFileSystem extends FileConteiner{
         }
     }
     //metodo utilizado para actualizar caracteristicas del producto, se requiere ID y el producto
-    async updateProduct(id,productSelect){
+    async updateProduct(productId_request,product_to_update){
         try{
             let data = await fs.promises.readFile(this.url,'utf-8');
-            let products = JSON.parse(data);                        
-
-            if(!products.some(product=>product.id===id)) return {status:"error", message:"No hay un producto con el id elegido"}
+            let products = JSON.parse(data);    
+            if(!products.some(product=>product.id===productId_request)) return {status:"error", message:"No hay un producto con el id elegido"}
             let result = products.map(product=>{                
-                if(product.id===id){                     
-                    productSelect = Object.assign(productSelect,{title:productSelect.title,description:productSelect.description,code:productSelect.code,thumbnail:productSelect.thumbnail,price:productSelect.price,stock:productSelect.stock})                    
-                    productSelect = Object.assign({...productSelect,id:product.id})                    
-                    return productSelect                    
+                if(product.id===productId_request){                     
+                    product_to_update = Object.assign(product_to_update,{
+                        title:product_to_update.title,
+                        description:product_to_update.description,
+                        code:product_to_update.code,
+                        thumbnail:product_to_update.thumbnail,
+                        price:product_to_update.price,
+                        stock:product_to_update.stock})                    
+                        product_to_update = Object.assign({...product_to_update,id:product.id})                    
+                    return product_to_update                    
                 }else{                   
                     return product;
                 }
@@ -114,13 +119,13 @@ export default class ProductsFileSystem extends FileConteiner{
         }
     }
     //permite borrar un producto por su numero de id
-    async deletebyId(numberId){
+    async deletebyId(productId_request){
         try{
-            let data = await fs.promises.readFile(this.url,'utf-8');
-            let products = JSON.parse(data); 
-            let prod = products.find(prod=>prod.id===numberId);
+            let result = await fs.promises.readFile(this.url,'utf-8');
+            let products = JSON.parse(result); 
+            let prod = products.find(prod=>prod.id===productId_request);
             if (prod){
-                let newProducts = products.filter((p)=>p.id!=numberId)                           
+                let newProducts = products.filter((p)=>p.id!=productId_request)                           
                 await fs.promises.writeFile(this.url,JSON.stringify(newProducts),null,2)                 
                 return {status:"success",message:"Se eliminó el producto elegido"} 
             }else{
