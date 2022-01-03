@@ -1,6 +1,6 @@
 let products;
 let carts;
-let persistence = 'mongo';
+let persistence = 'fb';
 
 switch(persistence){
     case "fileSystem":
@@ -15,6 +15,12 @@ switch(persistence){
         products = new ProductsMongo();
         carts = new CartsMongo(); 
         break;
+    case "fb":
+        const{default:ProductsFb} = await import ('./products/productsFb.js');
+        const{default:CartsFb} = await import ('./carts/cartsFb.js');
+        products = new ProductsFb();
+        carts = new CartsFb(); 
+        break;
     default:
 
-}export {products,carts}
+}export {products,carts,persistence}

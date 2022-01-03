@@ -8,14 +8,8 @@ import __dirname from './utils.js'
 import moment from 'moment';
 import {products} from './daos/index.js';
 import chatConteiner from './services/chatConteiner.js'
-// import productConteiner from './services/productConteiner.js';
-// import Conteiner from './contenedores/Conteiner.js';
-// import Cart from './contenedores/Cart.js';
 
-// const productService = new productConteiner();
 const chatService = new chatConteiner();
-// const PATH = __dirname+'/files/productsList.json';
-// const conteiner = new Conteiner(PATH);
 const app = express();
 const PORT = process.env.PORT||8080;
 const server = app.listen(PORT,()=>{
@@ -45,8 +39,6 @@ app.use('/api/cart',cartRouter)
 
 app.get('/views/products',(req,res)=>{
     products.getAll().then(result=>{
-    // conteiner.getAll().then(result=>{
-    // productService.getAll().then(result=>{
         let {data}=result;        
         let preparedObj={
             products : data
@@ -58,11 +50,8 @@ app.get('/views/products',(req,res)=>{
 //muestra los productos que tengo actualmente
 io.on('connection',async socket=>{
     console.log(`Socket ${socket.id} connected`);
-    let products = await products.getAll();
-    // let products = await conteiner.getAll();
-    // let products = await productService.getAll();
-    socket.emit('updateProducts',products)
-   
+    let products = await products.getAll();  
+    socket.emit('updateProducts',products)   
 })
 
 //muestra si estas logueado como admin
