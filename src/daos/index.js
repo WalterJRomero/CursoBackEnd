@@ -1,6 +1,6 @@
 let products;
 let carts;
-let persistence = 'fileSystem';
+let persistence = 'mongo';
 
 switch(persistence){
     case "fileSystem":
