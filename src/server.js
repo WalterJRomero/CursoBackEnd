@@ -4,14 +4,15 @@ import cors from 'cors';
 import router from './routes/products.js';
 import cartRouter from './routes/cart.js'
 import {Server} from 'socket.io';
-import __dirname from './utils.js';
+import __dirname, { normalizeMessages }from './utils.js';
 import moment from 'moment';
 import {products} from './daos/index.js';
-// import chatConteiner from './services/chatConteiner.js';
+import chatConteiner from './services/chatConteiner.js';
+import { authorService,messageService } from './services/services.js';
 import Chats from './contenedores/Chats.js';
 import { generate_dataProducts } from './utils.js';
 
-// const chatService = new chatConteiner();
+const chatService = new chatConteiner();
 const CHATSPATH = __dirname+'/files/chatsHistorical.json';
 const chats = new Chats(CHATSPATH);
 const app = express();
@@ -40,7 +41,6 @@ app.use((req,res,next)=>{
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
 app.use('/api/cart',cartRouter);
-
 app.get('/api/products-test',(req,res)=>{
     let test_products = generate_dataProducts()
     res.send({products:test_products})
@@ -48,7 +48,6 @@ app.get('/api/products-test',(req,res)=>{
 })
 
 app.get('/views/products',(req,res)=>{
-
     products.getAll().then(result=>{
         let {data}=result;        
         let preparedObj={
@@ -74,17 +73,16 @@ io.on('connection',async socket=>{
 
 //Chats en pantalla-----------------------------------------  
 io.on('connection',async socket=>{     
-    // let {data} = await chatService.getAllChats();
-    let {data} = await chats.getAllChats();    
-    socket.emit('messagelog',data);        
+    let {data} = await chatService.getAllChats();
+    // let {data} = await chats.getAllChats();    
+    socket.emit('messagelog',data);   
     socket.on('message',async res=>{             
-        // let date = moment().format('DD/MM/YYYY HH:mm:ss');        
-        // res.date = date;                 
-        // let result = await chatService.saveChats(res);         
-        // let chatData = await chatService.getAllChats();  
-        console.log(res)
-        let result = await chats.saveChats(res);         
-        let chatData = await chats.getAllChats();        
+        let date = moment().format('DD/MM/YYYY HH:mm:ss');        
+        res.date = date;                 
+        let result = await chatService.saveChats(res);         
+        let chatData = await chatService.getAllChats();         
+        // let result = await chats.saveChats(res);         
+        // let chatData = await chats.getAllChats();        
         io.emit('messagelog',chatData.data);       
     })             
 })

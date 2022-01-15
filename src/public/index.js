@@ -2,16 +2,10 @@ const socket = io();
 
 let message = document.getElementById('message');
 let email = document.getElementById('email');
-let user_firstName = document.getElementById('user_firstName');
-let user_lastName = document.getElementById('user_lastName');
-let user_age = document.getElementById('user_age');
-let user_alias = document.getElementById('user_alias');
-let user_avatar = document.getElementById('user_avatar');
 let chatBox = document.getElementById('chatBox');
 let button = document.getElementById('button');
 let idModify = null
 let botonScroll= $(".boton-scroll");
-
 
 
 //actualizacion de productos usando template handlebars
@@ -60,12 +54,8 @@ function pruebaEmail(valor){
 	}else {
         $("#chatBox").slideDown(1000);
         button.disabled = true;
-        email.disabled = true;
-        user_firstName.disabled = true;
-        user_lastName.disabled = true;   
-        user_age.disabled = true;
-        user_alias.disabled = true;
-        user_avatar.disabled = true;
+        email.disabled = true;   
+
     }
 }
 //muestro en el div "log" la info obtenida desde el socket, "messagelog" es quien envia la info
@@ -74,9 +64,9 @@ socket.on('messagelog', data=>{
     if (data){        
         let messages = data.map(message=>{
         return `<div class="container-fluid bg-light bg-gradient mb-1 ">
-                    <span class="text-primary fw-bold">${message.author.id} </span>
+                    <span class="text-primary fw-bold">${message.email} </span>
                     <span style="color:brown">[${message.date}] </span>                   
-                    <span class="fst-italic text-success">: ${message.text}</span>
+                    <span class="fst-italic text-success">: ${message.message}</span>                    
                 </div>`
         }).join('');
         p.innerHTML=messages;
@@ -86,25 +76,7 @@ socket.on('messagelog', data=>{
 })
 //funcion para enviar un mensaje con el button "enviar mensaje"
 function sendMessage(){
-    socket.emit('message',{
-
-        // email:email.value,
-        // message:message.value,
-        // firstName:user_firstName.value,
-        // lastName:user_lastName.value,
-        // alias:user_alias.value,
-        // age:user_age.value,
-        // avatar:user_avatar.value
-        author: {
-            id: email.value, 
-            nombre: user_firstName.value, 
-            apellido: user_lastName.value, 
-            edad: user_age.value, 
-            alias: user_alias.value,
-            avatar: user_avatar.value
-        },
-        text: message.value
-    }); 
+    socket.emit('message',{email:email.value,message:message.value}); 
     message.value=""     
 }
 
