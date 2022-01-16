@@ -1,7 +1,6 @@
 import { fileURLToPath } from "url";
 import {dirname} from 'path';
 import faker from 'faker';
-import {normalize,schema} from 'normalizr';
 
 const filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(filename);
@@ -33,20 +32,6 @@ export const generate_dataProducts = () =>{
         })
     }
     return {status:"success",data:products};
-}
-
-//--NORMALIZER--
-export const normalizeMessages =(data)=>{
-
-    const authors = new schema.Entity('authors',{},{idAttribute:'_id'});
-    const messages = new schema.Entity('messages',{
-        author:authors
-    },{idAttribute:'_id'})
-    const postObject = new schema.Entity('post',{
-        messages:[messages]
-    })
-    const normalizedObject =  normalize(data,postObject)
-    return normalizedObject;
 }
 
 export default __dirname;
