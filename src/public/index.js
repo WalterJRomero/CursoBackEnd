@@ -12,7 +12,65 @@ let alias = document.getElementById('user_alias');
 let age = document.getElementById('user_age');
 let avatar = document.getElementById('user_avatar')
 let compressionResult
+let chatBoxGeneral = document.getElementById('chatBoxGeneral')
+let logSection = document.getElementById('logSection')
+let loggedBox = document.getElementById('loggedBox')
+let userLogged = document.getElementById('userLogged')
+$("#chatBoxGeneral").slideUp(1); 
+$("#loggedBox").slideUp(1); 
+let user;
 
+fetch('/currentUser').then(result=>result.json()).then(json=>{
+    user = json;    
+    if (user){
+        email.value = user.email,
+        nameUser.value =user.name,
+        lastName.value= user.lastName,
+        alias.value= user.username,
+        age.value = user.age,
+        avatar.value=user.avatar
+        userLogged.innerHTML = ` ${user.name}`
+        $("#chatBoxGeneral").slideDown(1); 
+        $("#loggedBox").slideDown(1); 
+        $("#logSection").slideUp(1)
+    }
+}).catch(err=>console.log('Aun no hay usuario logueado'))
+
+function desloguear(){  
+    // Swal.fire({
+    //     title: 'Estas seguro de cerrar la sesion?',
+    //     text: "Tendras que loguearte nuevamente",
+    //     icon: 'warning',
+    //     showCancelButton: true,
+    //     confirmButtonColor: '#3085d6',
+    //     cancelButtonColor: '#d33',
+    //     timer: 2000,
+    //     confirmButtonText: 'Si, cerrar sesion!'
+    // }).then((result) => {
+    //     if (result.isConfirmed) {
+    //         Swal.fire(
+    //             `Hasta luego ${user.name}`,
+    //             'Haz cerrado la sesion correcamente',
+    //             'success'
+    //         ).then(res=>{
+    //             fetch('/logout').then(result=>console.log(result)).then(res=>{
+    //                 location.href='/'
+    //             })
+    //         })  
+    //     }
+    // })    
+    Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: `Hasta luego ${user.name}`,
+        showConfirmButton: false,
+        timer: 2500
+    }).then(res=>{
+        fetch('/logout').then(result=>console.log(result)).then(res=>{
+            location.href='./pages/login.html'
+        })
+    })         
+}
 //actualizacion de productos usando template handlebars
 socket.on('updateProducts',products=>{
     let {data} = products;  
@@ -60,7 +118,7 @@ function pruebaEmail(valor){
         compresion.disabled=false   
 
 	}else {
-        $("#chatBox").slideDown(1000);
+        $("#chatBox").slideDown(1000);        
         button.disabled = true;
         email.disabled = true;        
         nameUser.disabled =  true;
