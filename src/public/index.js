@@ -36,29 +36,7 @@ fetch('/currentUser').then(result=>result.json()).then(json=>{
     }
 }).catch(err=>console.log('Aun no hay usuario logueado'))
 
-function desloguear(){  
-    // Swal.fire({
-    //     title: 'Estas seguro de cerrar la sesion?',
-    //     text: "Tendras que loguearte nuevamente",
-    //     icon: 'warning',
-    //     showCancelButton: true,
-    //     confirmButtonColor: '#3085d6',
-    //     cancelButtonColor: '#d33',
-    //     timer: 2000,
-    //     confirmButtonText: 'Si, cerrar sesion!'
-    // }).then((result) => {
-    //     if (result.isConfirmed) {
-    //         Swal.fire(
-    //             `Hasta luego ${user.name}`,
-    //             'Haz cerrado la sesion correcamente',
-    //             'success'
-    //         ).then(res=>{
-    //             fetch('/logout').then(result=>console.log(result)).then(res=>{
-    //                 location.href='/'
-    //             })
-    //         })  
-    //     }
-    // })    
+function desloguear(){      
     Swal.fire({
         position: 'top-end',
         icon: 'success',

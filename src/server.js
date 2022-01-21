@@ -11,6 +11,9 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo'
 import config from './config.js';
 import ios from 'socket.io-express-session'
+// import passport from 'passport'
+// import mongoose from 'mongoose'
+// import initializePassportConfig from '../passport-config.js';
 
 const app = express();
 const PORT = process.env.PORT||8080;
@@ -19,11 +22,13 @@ const server = app.listen(PORT,()=>{
 })
 export const io = new Server(server);
 export const admin=true;
+//  const connection = mongoose.connect('mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/PassBase?retryWrites=true&w=majority')
 
 const baseSession = (session({
     store:MongoStore.create({mongoUrl:config.mongoSessions.baseUrl}),
-    resave:false,
-    saveUninitialized:false,
+    resave:true,
+    cookie:{maxAge:600000},
+    saveUninitialized:true,
     secret:"CoderChat"
 }))
 
@@ -43,6 +48,10 @@ app.use((req,res,next)=>{
     req.auth = admin
     next();
 })
+// initializePassportConfig();
+// app.use(passport.initialize());
+// app.use(passport.session());
+
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
 app.use('/api/cart',cartRouter);
@@ -56,6 +65,7 @@ app.get('/views/products',(req,res)=>{
         res.render('products',preparedObj);
     })   
 })
+
 app.get('/currentUser',(req,res)=>{
     res.send(req.session.user)
 })
@@ -64,8 +74,7 @@ app.get('/currentUser',(req,res)=>{
 io.on('connection',async socket=>{
     console.log(`Socket ${socket.id} connected`);
     let auth = admin;
-    let productsToShow = await products.getAll();    
-    // let productsToShow = generate_dataProducts();     
+    let productsToShow = await products.getAll();       
     let productsProccesed = JSON.parse(JSON.stringify(productsToShow))     
     socket.emit('updateProducts',productsProccesed);   
     socket.emit('auth',auth)   
@@ -74,8 +83,7 @@ io.on('connection',async socket=>{
 //Chats en pantalla-----------------------------------------  
 io.on('connection',async socket=>{ 
     socket.broadcast.emit('thirdConnection','Alguien se ha unido al chat') 
-    let data = await chats.getAllChats();    
-    // console.log('esto es data del getallchat server')
+    let data = await chats.getAllChats();     
     socket.emit('messagelog',data);   
     socket.on('message',async res=>{               
         let result = await chats.save(res);        
@@ -94,8 +102,7 @@ app.post('/login',async (req,res)=>{
     let {email,password} = req.body;    
     if(!email||!password) return res.status(400).send({error:"Incomplete fields"})   
     const user = await users.getByEmail(email);    
-    if(user.status=='Error') return res.status(404).send({error:'usuario no encontrado'})
-    console.log(user);
+    if(user.status=='Error') return res.status(404).send({error:'usuario no encontrado'})    
     if(user.data.password!==password) return res.status(400).send({error:'contrasena incorrecta'})
     req.session.user={
         username:user.data.username,
@@ -108,13 +115,23 @@ app.post('/login',async (req,res)=>{
     res.send({status:'logueado'})
 })
 
-app.get('/logout',async (req,res)=>{
-    console.log('es logout');
+app.get('/logout',(req,res)=>{    
     req.session.destroy((err) => {
         res.redirect('/') 
-      })
+    })
+//     req.logout();
+//     res.redirect('/')
 })
 
+// app.get('/auth/facebook',passport.authenticate('facebook'),(req,res)=>{
+
+// })
+
+// app.get('/auth/facebook/callback',passport.authenticate('facebook'),{
+//     failureRedirect:'/paginaFail'
+// }),(req,res)=>{
+//     res.send({message:'loggeado'})
+// }
 
 
 //capturo las rutas fuera de las que estan diseñadas
