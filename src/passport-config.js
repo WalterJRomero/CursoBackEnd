@@ -9,16 +9,17 @@ const LocalStrategy = local.Strategy;
 
 export const initializePassportConfig = ()=>{
     passport.use('facebook',new FacebookStrategy({
-        clientID:'4732264060200194',
-        callbackURL:'https://07a9-2800-810-598-8c39-707c-f884-4a77-6f36.ngrok.io/auth/facebook/callback',
-        clientSecret:'e1df7eed3666f99e4a1774ab8837427a',
+        clientID:'898273697516167',
+        callbackURL:'https://9353-2800-810-598-8c39-d0c4-7f9-1b4-e97e.ngrok.io/auth/facebook/callback',
+        clientSecret:'a5c5485f55a5853f146e6ec272291676',
         profileFields:['emails','picture','displayName']
     },async(accessToken,refreshToken,profile,done)=>{
-        try{
-            console.log(accessToken);
+        try{            
             console.log(profile);
-            let user = await users.getByEmail(profile.emails[0].value)//email
-            done(null,user)
+            let user = await users.getByEmail(profile.emails[0].value)//email            
+            let userProcessed = JSON.parse(JSON.stringify(user)) 
+            console.log(userProcessed);          
+            done(null,userProcessed)
         }catch(error){
             done(error)
         }

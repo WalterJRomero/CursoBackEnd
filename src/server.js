@@ -26,9 +26,9 @@ export const admin=true;
 
 const baseSession = (session({
     store:MongoStore.create({mongoUrl:config.mongoSessions.baseUrl}),
-    resave:false,
+    resave:true,
     cookie:{maxAge:600000},
-    saveUninitialized:false,
+    saveUninitialized:true,
     secret:"CoderChat"
 }))
 
@@ -138,7 +138,6 @@ app.post('/failedRegister',(req,res)=>{
     res.send({error:'no se pudo autenticar'})
 })
 
-
 app.post('/login',passport.authenticate('login',{failureRedirect:'/failedLogin'}),(req,res)=>{
     res.send({message:'logged in'})
 })
@@ -149,6 +148,7 @@ app.post('/failedLogin',(req,res)=>{
 })
 
 app.get('/checkSession',(req,res)=>{    
+    console.log('dentro del checkSession');      
     res.send(req.user)
 })
 
@@ -160,15 +160,20 @@ app.get('/checkSession',(req,res)=>{
 
 //logueo con facebook
 app.get('/auth/facebook',passport.authenticate('facebook',{scope:['email']}),(req,res)=>{
-
+    console.log('dentro de logueo facebook');
 })
 
 app.get('/auth/facebook/callback',passport.authenticate('facebook',{
-    failureRedirect:'/paginaFail'
+    failureRedirect:'/failedLoginFb',
+    successRedirect: '/'
 }),(req,res)=>{
     res.send({message:'logueado'})
+    console.log(req);
 })
 
+app.post('/failedLoginFb',(req,res)=>{   
+    res.send({error:'no se pudo logguear'})
+})
 
 //capturo las rutas fuera de las que estan diseñadas
 app.use('/*', function(req, res){
