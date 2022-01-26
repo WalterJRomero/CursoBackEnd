@@ -20,4 +20,16 @@ export default class UsersMongo extends MongoConteiner{
             return { status: 'error', message: 'Hubo un error durante la operacion: ', error };
         }
     }
+
+    async getByUserName(username){
+        try {
+            let document = await this.collection.findOne({username: username});    
+        if (!document)
+            return { status: 'Error', message: `No se encontro el usuario: ${username}` };
+    
+        return { status: 'success', data: document };
+        } catch (error) {
+            return { status: 'error', message: 'Hubo un error durante la operacion: ', error };
+        }
+    }
 }

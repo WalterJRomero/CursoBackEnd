@@ -31,6 +31,9 @@ export default{
     },
     mongoSessions:{
         baseUrl:'mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/sessions?retryWrites=true&w=majority'
+    },
+    mongoPassBase:{
+        baseUrl:'mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/PassBase?retryWrites=true&w=majority'
     }
 }
 

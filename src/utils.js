@@ -1,6 +1,7 @@
 import { fileURLToPath } from "url";
 import {dirname} from 'path';
 import faker from 'faker';
+import bcrypt from 'bcrypt'
 
 const filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(filename);
@@ -33,5 +34,8 @@ export const generate_dataProducts = () =>{
     }
     return {status:"success",data:products};
 }
+
+export const createHash = password => bcrypt.hashSync(password,bcrypt.genSaltSync(10))
+export const isValidPassword = (user,password) => bcrypt.compareSync(password,user.data.password);
 
 export default __dirname;

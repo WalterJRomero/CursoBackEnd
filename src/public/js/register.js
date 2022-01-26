@@ -1,6 +1,5 @@
 let form  = document.getElementById("registerForm");
 form.addEventListener('submit',function(event){
-    console.log('aca');
     event.preventDefault();
     let info = new FormData(form);
     let sendObject ={
@@ -12,7 +11,11 @@ form.addEventListener('submit',function(event){
         avatar:info.get('register_avatar'),
         password:info.get('register_password')
     }
-    console.log(sendObject);
+    // let sendObject={}
+    // let data = new FormData(form)
+    // data.forEach((value,key)=>sendObject[key]=value)
+
+
     fetch('/register',{
         method:"POST",
         headers:{
@@ -21,6 +24,7 @@ form.addEventListener('submit',function(event){
         'Accept': 'application/json',
         body:JSON.stringify(sendObject),
     }).then(result=>{
+        console.log(result);
         return result.json()
     }).then(json=>{
         form.reset();        

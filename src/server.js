@@ -5,15 +5,16 @@ import router from './routes/products.js';
 import cartRouter from './routes/cart.js'
 import {Server} from 'socket.io';
 import __dirname from './utils.js';
-import {products,chats,users,messages} from './daos/index.js';
-import { generate_dataProducts } from './utils.js';
+import {products,chats,users} from './daos/index.js';
+// import { generate_dataProducts } from './utils.js';
 import session from 'express-session';
 import MongoStore from 'connect-mongo'
 import config from './config.js';
 import ios from 'socket.io-express-session'
-// import passport from 'passport'
-// import mongoose from 'mongoose'
-// import initializePassportConfig from '../passport-config.js';
+import passport from 'passport'
+import mongoose from 'mongoose'
+// import {initializePassportConfig, initializePassportLocal} from './passport-config.js';
+import { initializePassportLocal } from './passport-config.js';
 
 const app = express();
 const PORT = process.env.PORT||8080;
@@ -22,23 +23,25 @@ const server = app.listen(PORT,()=>{
 })
 export const io = new Server(server);
 export const admin=true;
-//  const connection = mongoose.connect('mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/PassBase?retryWrites=true&w=majority')
+
 
 const baseSession = (session({
     store:MongoStore.create({mongoUrl:config.mongoSessions.baseUrl}),
-    resave:true,
+    resave:false,
     cookie:{maxAge:600000},
-    saveUninitialized:true,
+    saveUninitialized:false,
     secret:"CoderChat"
 }))
+
+// const connection = mongoose.createConnection("mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/PassBase?retryWrites=true&w=majority")
 
 app.engine('handlebars',engine());
 app.set('views',__dirname+'/views');
 app.set('view engine','handlebars');
 
+app.use(express.json());
 app.use(baseSession);
 io.use(ios(baseSession));
-app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({extended:true}));
 app.use((req,res,next)=>{
@@ -49,8 +52,9 @@ app.use((req,res,next)=>{
     next();
 })
 // initializePassportConfig();
-// app.use(passport.initialize());
-// app.use(passport.session());
+initializePassportLocal();
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
@@ -92,46 +96,94 @@ io.on('connection',async socket=>{
     })             
 })
 
-app.post('/register',async (req,res)=>{
-    let userRegister = req.body;
-    let result = await users.save(userRegister)
-    res.send({message:'user created',user:result})
-})
+//logueo y registro con usuario y contrasena
+// app.post('/register',async (req,res)=>{
+//     let userRegister = req.body;    
+//     //valida que no este un usuario ya registrado
+//     let {email} =req.body;    
+//     let userExists = await users.getByEmail(email);   
+//     if (userExists.status =='success') return res.status(400).send({error:'usuario ya registrado'})
+//     let result = await users.save(userRegister)
+//     res.send({message:'user created',user:result})    
+// })
 
-app.post('/login',async (req,res)=>{    
-    let {email,password} = req.body;    
-    if(!email||!password) return res.status(400).send({error:"Incomplete fields"})   
-    const user = await users.getByEmail(email);    
-    if(user.status=='Error') return res.status(404).send({error:'usuario no encontrado'})    
-    if(user.data.password!==password) return res.status(400).send({error:'contrasena incorrecta'})
-    req.session.user={
-        username:user.data.username,
-        email:user.data.email,
-        avatar:user.data.avatar,
-        age:user.data.age,
-        name:user.data.name,
-        lastName:user.data.lastName
-    }
-    res.send({status:'logueado'})
-})
+// app.post('/login',async (req,res)=>{    
+//     let {email,password} = req.body;    
+//     if(!email||!password) return res.status(400).send({error:"Incomplete fields"})   
+//     const user = await users.getByEmail(email);    
+//     if(user.status=='Error') return res.status(404).send({error:'usuario no encontrado'})    
+//     if(user.data.password!==password) return res.status(400).send({error:'contrasena incorrecta'})
+//     req.session.user={
+//         username:user.data.username,
+//         email:user.data.email,
+//         avatar:user.data.avatar,
+//         age:user.data.age,
+//         name:user.data.name,
+//         lastName:user.data.lastName
+//     }
+//     res.send({status:'logueado'})
+// })
 
 app.get('/logout',(req,res)=>{    
     req.session.destroy((err) => {
+        // if (err) return res.send({error:"error de logout"})
         res.redirect('/') 
+        //res.send({message:"deslogueado"})
     })
-//     req.logout();
-//     res.redirect('/')
 })
 
-// app.get('/auth/facebook',passport.authenticate('facebook'),(req,res)=>{
+//logueo y registro con passport
+// app.post('/register',passport.authenticate('register',{failedeRedirect:'/failedRegister'}),async (req,res)=>{
+//    res.send({message:'usuario registrado'})  
+// })
+
+app.post('/failedRegister',(req,res)=>{
+    console.log('usuario ya registrado');
+    res.send({error:'no se pudo autenticar'})
+})
+
+app.post('/register',passport.authenticate('register',{failureRedirect:'/failedRegister'}),async (req,res)=>{
+    // let userRegister = req.body;    
+    //valida que no este un usuario ya registrado
+    // let {email} =req.body;    
+    // let userExists = await users.getByEmail(email);   
+    // if (userExists.status =='success') return res.status(400).send({error:'usuario ya registrado'})
+    // let result = await users.save(userRegister)
+    // res.send({message:'user created',user:result})    
+    res.send({message:'usuario registrado'})  
+})
+
+
+
+app.post('/failedLogin',(req,res)=>{
+    console.log('usuario ya logueado');
+    res.send({error:'no se pudo logguear'})
+})
+
+
+app.post('/login',passport.authenticate('login',{failureRedirect:'/failedLogin'}),(req,res)=>{
+    res.send({message:'logged in'})
+})
+
+// app.get('/checkSession',(req,res)=>{
+// //res.send(req.session);
+// res.send(req.user)
+// })
+
+// app.get('/logout',(req,res)=>{
+//     req.logout();
+// })
+
+//logueo con facebook
+// app.get('/auth/facebook',passport.authenticate('facebook',{scope:['email']}),(req,res)=>{
 
 // })
 
-// app.get('/auth/facebook/callback',passport.authenticate('facebook'),{
+// app.get('/auth/facebook/callback',passport.authenticate('facebook',{
 //     failureRedirect:'/paginaFail'
 // }),(req,res)=>{
 //     res.send({message:'loggeado'})
-// }
+// })
 
 
 //capturo las rutas fuera de las que estan diseñadas

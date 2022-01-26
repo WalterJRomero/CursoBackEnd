@@ -23,7 +23,7 @@ form.addEventListener('submit',function(event){
                 title: 'No se encontro usuario',
                 showConfirmButton: true,
                 timer: 2000
-              }).then(res=>location.replace('./login.js'))                
+              }).then(res=>location.replace('./login.html'))                
             console.log(json.error);        
         }else{
             Swal.fire({

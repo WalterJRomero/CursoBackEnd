@@ -20,6 +20,13 @@ $("#chatBoxGeneral").slideUp(1);
 $("#loggedBox").slideUp(1); 
 let user;
 
+let btn = document.getElementById('facebook-login')
+btn.addEventListener('click',(evt)=>{
+    location = "http://localhost:8080/auth/facebook"
+})
+
+
+
 fetch('/currentUser').then(result=>result.json()).then(json=>{
     user = json;    
     if (user){
