@@ -18,7 +18,7 @@ const UsersSchema = {
         required: true },    
     avatar: { 
         type: String,
-        default:'http://alexeitruhin.github.io/images/avatar-br.png'},
+            },
     password:{
         type:String,
         required:true

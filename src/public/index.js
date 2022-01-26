@@ -16,6 +16,7 @@ let chatBoxGeneral = document.getElementById('chatBoxGeneral')
 let logSection = document.getElementById('logSection')
 let loggedBox = document.getElementById('loggedBox')
 let userLogged = document.getElementById('userLogged')
+let pictureProfile = document.getElementById('pictureProfile')
 $("#chatBoxGeneral").slideUp(1); 
 $("#loggedBox").slideUp(1); 
 let user;
@@ -38,6 +39,7 @@ fetch('/checkSession').then(result=>result.json()).then(json=>{
         age.value = user.age,
         avatar.value=user.avatar
         userLogged.innerHTML = ` ${user.name}`
+        pictureProfile.innerHTML = `<img src="${user.avatar}"/>`
         $("#chatBoxGeneral").slideDown(1); 
         $("#loggedBox").slideDown(1); 
         $("#logSection").slideUp(1)

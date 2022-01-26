@@ -148,7 +148,9 @@ app.post('/failedLogin',(req,res)=>{
 })
 
 app.get('/checkSession',(req,res)=>{    
-    console.log('dentro del checkSession');      
+    console.log('dentro del checkSession');     
+     
+    console.log(req.user);
     res.send(req.user)
 })
 

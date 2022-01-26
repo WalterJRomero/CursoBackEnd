@@ -16,9 +16,11 @@ export const initializePassportConfig = ()=>{
     },async(accessToken,refreshToken,profile,done)=>{
         try{            
             console.log(profile);
-            let user = await users.getByEmail(profile.emails[0].value)//email            
+            console.log('esto es profile');
+            console.log(profile.photos[0].value);
+            let user = await users.getByEmail(profile.emails[0].value)//email     
+            if (user.status=="success"){await users.updateAvatar(profile.emails[0].value,profile.photos[0].value)}
             let userProcessed = JSON.parse(JSON.stringify(user)) 
-            console.log(userProcessed);          
             done(null,userProcessed)
         }catch(error){
             done(error)

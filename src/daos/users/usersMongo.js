@@ -32,4 +32,13 @@ export default class UsersMongo extends MongoConteiner{
             return { status: 'error', message: 'Hubo un error durante la operacion: ', error };
         }
     }
+
+    async updateAvatar(email,avatarPicture){
+        try {            
+            let result = await this.collection.updateOne({ email: email }, { $set: { avatar: avatarPicture } });
+            return { status: 'success', message: 'Se modifico url de avatar', data: result };
+        } catch (error) {
+            return { status: 'error', message: `no se encontro email: ${email}` };
+        };
+    }
 }
