@@ -4,26 +4,26 @@ import {users} from './daos/index.js'
 import local from 'passport-local'
 import { createHash, isValidPassword } from "./utils.js";
 
-// const FacebookStrategy = fbStrategy.Strategy;
+const FacebookStrategy = fbStrategy.Strategy;
 const LocalStrategy = local.Strategy;
 
-// export const initializePassportConfig = ()=>{
-//     passport.use('facebook',new FacebookStrategy({
-//         clientID:'4732264060200194',
-//         callbackURL:'https://07a9-2800-810-598-8c39-707c-f884-4a77-6f36.ngrok.io/auth/facebook/callback',
-//         clientSecret:'e1df7eed3666f99e4a1774ab8837427a',
-//         profileFields:['emails','picture','displayName]
-//     },async(accessToken,refreshToken,profile,done)=>{
-//         try{
-//             console.log(accessToken);
-//             console.log(profile);
-//             let user = await users.getByEmail(profile.emails[0].value)//email
-//             done(null,user)
-//         }catch(error){
-//             done(error)
-//         }
-//     }))   
-// }
+export const initializePassportConfig = ()=>{
+    passport.use('facebook',new FacebookStrategy({
+        clientID:'4732264060200194',
+        callbackURL:'https://07a9-2800-810-598-8c39-707c-f884-4a77-6f36.ngrok.io/auth/facebook/callback',
+        clientSecret:'e1df7eed3666f99e4a1774ab8837427a',
+        profileFields:['emails','picture','displayName']
+    },async(accessToken,refreshToken,profile,done)=>{
+        try{
+            console.log(accessToken);
+            console.log(profile);
+            let user = await users.getByEmail(profile.emails[0].value)//email
+            done(null,user)
+        }catch(error){
+            done(error)
+        }
+    }))   
+}
 
 
 export const initializePassportLocal = ()=>{
@@ -62,14 +62,16 @@ export const initializePassportLocal = ()=>{
             done(err)
         }
     }))
-    passport.serializeUser((user,done)=>{        
+    passport.serializeUser((user,done)=>{   
+        console.log('en serialize');     
         let userProcessed = JSON.parse(JSON.stringify(user)) //parseo mi resultado para quitar el object id        
         done(null,userProcessed.data._id)
     })
     passport.deserializeUser(async (id,done)=>{            
+        console.log('en deserialize');
         let {data} = await users.getById(id)
-        let userProcessed = JSON.parse(JSON.stringify(data))        
-        done(null,userProcessed._id)
+        let userProcessed = JSON.parse(JSON.stringify(data))            
+        done(null,userProcessed)
 
     })
 }

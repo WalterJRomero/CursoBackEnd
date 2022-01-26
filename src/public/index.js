@@ -27,7 +27,8 @@ btn.addEventListener('click',(evt)=>{
 
 
 
-fetch('/currentUser').then(result=>result.json()).then(json=>{
+fetch('/checkSession').then(result=>result.json()).then(json=>{
+    console.log(json);
     user = json;    
     if (user){
         email.value = user.email,
@@ -52,7 +53,8 @@ function desloguear(){
         timer: 2500
     }).then(res=>{
         fetch('/logout').then(result=>console.log(result)).then(res=>{
-            location.href='./pages/login.html'
+            // location.href='./pages/login.html'
+            location.replace('./pages/login.html')
         })
     })         
 }

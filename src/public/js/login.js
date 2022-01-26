@@ -4,7 +4,7 @@ form.addEventListener('submit',function(event){
     event.preventDefault();
     let info = new FormData(form);
     let sendObject={
-        email:info.get('login_email'),
+        username:info.get('login_username'),
         password:info.get('login_password')
     }
     fetch('/login',{

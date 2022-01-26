@@ -13,8 +13,7 @@ import config from './config.js';
 import ios from 'socket.io-express-session'
 import passport from 'passport'
 import mongoose from 'mongoose'
-// import {initializePassportConfig, initializePassportLocal} from './passport-config.js';
-import { initializePassportLocal } from './passport-config.js';
+import {initializePassportConfig, initializePassportLocal} from './passport-config.js';
 
 const app = express();
 const PORT = process.env.PORT||8080;
@@ -33,8 +32,6 @@ const baseSession = (session({
     secret:"CoderChat"
 }))
 
-// const connection = mongoose.createConnection("mongodb+srv://wjromero:1234@ecommerce.rpxxc.mongodb.net/PassBase?retryWrites=true&w=majority")
-
 app.engine('handlebars',engine());
 app.set('views',__dirname+'/views');
 app.set('view engine','handlebars');
@@ -51,7 +48,7 @@ app.use((req,res,next)=>{
     req.auth = admin
     next();
 })
-// initializePassportConfig();
+initializePassportConfig();
 initializePassportLocal();
 app.use(passport.initialize());
 app.use(passport.session());
@@ -68,10 +65,6 @@ app.get('/views/products',(req,res)=>{
         }
         res.render('products',preparedObj);
     })   
-})
-
-app.get('/currentUser',(req,res)=>{
-    res.send(req.session.user)
 })
 
 //muestra los productos que tengo actualmente
@@ -97,6 +90,7 @@ io.on('connection',async socket=>{
 })
 
 //logueo y registro con usuario y contrasena
+
 // app.post('/register',async (req,res)=>{
 //     let userRegister = req.body;    
 //     //valida que no este un usuario ya registrado
@@ -124,40 +118,24 @@ io.on('connection',async socket=>{
 //     res.send({status:'logueado'})
 // })
 
+// app.get('/currentUser',(req,res)=>{    
+//     res.send(req.session.user)    
+// })
+
 app.get('/logout',(req,res)=>{    
-    req.session.destroy((err) => {
-        // if (err) return res.send({error:"error de logout"})
-        res.redirect('/') 
-        //res.send({message:"deslogueado"})
+    req.session.destroy((err) => {        
+        res.redirect('/')         
     })
 })
 
-//logueo y registro con passport
-// app.post('/register',passport.authenticate('register',{failedeRedirect:'/failedRegister'}),async (req,res)=>{
-//    res.send({message:'usuario registrado'})  
-// })
+// REGISTRO CON PASSPORT
+app.post('/register',passport.authenticate('register',{failureRedirect:'/failedRegister'}),async (req,res)=>{   
+    res.send({message:'usuario registrado'})  
+})
 
 app.post('/failedRegister',(req,res)=>{
     console.log('usuario ya registrado');
     res.send({error:'no se pudo autenticar'})
-})
-
-app.post('/register',passport.authenticate('register',{failureRedirect:'/failedRegister'}),async (req,res)=>{
-    // let userRegister = req.body;    
-    //valida que no este un usuario ya registrado
-    // let {email} =req.body;    
-    // let userExists = await users.getByEmail(email);   
-    // if (userExists.status =='success') return res.status(400).send({error:'usuario ya registrado'})
-    // let result = await users.save(userRegister)
-    // res.send({message:'user created',user:result})    
-    res.send({message:'usuario registrado'})  
-})
-
-
-
-app.post('/failedLogin',(req,res)=>{
-    console.log('usuario ya logueado');
-    res.send({error:'no se pudo logguear'})
 })
 
 
@@ -165,25 +143,31 @@ app.post('/login',passport.authenticate('login',{failureRedirect:'/failedLogin'}
     res.send({message:'logged in'})
 })
 
-// app.get('/checkSession',(req,res)=>{
-// //res.send(req.session);
-// res.send(req.user)
-// })
+app.post('/failedLogin',(req,res)=>{
+    console.log('usuario ya logueado');
+    res.send({error:'no se pudo logguear'})
+})
+
+app.get('/checkSession',(req,res)=>{    
+    res.send(req.user)
+})
 
 // app.get('/logout',(req,res)=>{
+//     console.log('en logout');
 //     req.logout();
 // })
 
+
 //logueo con facebook
-// app.get('/auth/facebook',passport.authenticate('facebook',{scope:['email']}),(req,res)=>{
+app.get('/auth/facebook',passport.authenticate('facebook',{scope:['email']}),(req,res)=>{
 
-// })
+})
 
-// app.get('/auth/facebook/callback',passport.authenticate('facebook',{
-//     failureRedirect:'/paginaFail'
-// }),(req,res)=>{
-//     res.send({message:'loggeado'})
-// })
+app.get('/auth/facebook/callback',passport.authenticate('facebook',{
+    failureRedirect:'/paginaFail'
+}),(req,res)=>{
+    res.send({message:'logueado'})
+})
 
 
 //capturo las rutas fuera de las que estan diseñadas
