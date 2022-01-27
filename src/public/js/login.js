@@ -34,5 +34,11 @@ form.addEventListener('submit',function(event){
                 timer: 2000,
             }).then(res=>location.replace('../index.html')) 
         }
-    }).catch(err=>console.log('No existe usuario'))
+    }).catch(err=>Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'No se encontro usuario',
+            showConfirmButton: true,
+            timer: 2000
+            }).then(res=>location.replace('./login.html'))     )
 })

@@ -26,10 +26,7 @@ btn.addEventListener('click',(evt)=>{
     location = "http://localhost:8080/auth/facebook"
 })
 
-
-
-fetch('/checkSession').then(result=>result.json()).then(json=>{
-    console.log(json);
+fetch('/checkSession').then(result=>result.json()).then(json=>{    
     user = json;    
     if (user){
         email.value = user.email,
@@ -38,8 +35,8 @@ fetch('/checkSession').then(result=>result.json()).then(json=>{
         alias.value= user.username,
         age.value = user.age,
         avatar.value=user.avatar
-        userLogged.innerHTML = ` ${user.name}`
-        pictureProfile.innerHTML = `<img src="${user.avatar}"/>`
+        userLogged.innerHTML = ` ${user.name} ${user.lastName}`
+        pictureProfile.innerHTML = `<img src="${user.avatar}" class="border border-primary rounded-circle"/>`
         $("#chatBoxGeneral").slideDown(1); 
         $("#loggedBox").slideDown(1); 
         $("#logSection").slideUp(1)

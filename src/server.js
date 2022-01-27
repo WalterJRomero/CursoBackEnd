@@ -148,9 +148,6 @@ app.post('/failedLogin',(req,res)=>{
 })
 
 app.get('/checkSession',(req,res)=>{    
-    console.log('dentro del checkSession');     
-     
-    console.log(req.user);
     res.send(req.user)
 })
 
@@ -169,8 +166,7 @@ app.get('/auth/facebook/callback',passport.authenticate('facebook',{
     failureRedirect:'/failedLoginFb',
     successRedirect: '/'
 }),(req,res)=>{
-    res.send({message:'logueado'})
-    console.log(req);
+    res.send({message:'logueado'})    
 })
 
 app.post('/failedLoginFb',(req,res)=>{   

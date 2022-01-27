@@ -14,10 +14,7 @@ export const initializePassportConfig = ()=>{
         clientSecret:'a5c5485f55a5853f146e6ec272291676',
         profileFields:['emails','picture','displayName']
     },async(accessToken,refreshToken,profile,done)=>{
-        try{            
-            console.log(profile);
-            console.log('esto es profile');
-            console.log(profile.photos[0].value);
+        try{                  
             let user = await users.getByEmail(profile.emails[0].value)//email     
             if (user.status=="success"){await users.updateAvatar(profile.emails[0].value,profile.photos[0].value)}
             let userProcessed = JSON.parse(JSON.stringify(user)) 
@@ -33,7 +30,9 @@ export const initializePassportLocal = ()=>{
     passport.use('register',new LocalStrategy({passReqToCallback:true},async(req,username,password,done)=>{
         try{
             let user= await users.getByUserName(username);
-            let userProcessed = JSON.parse(JSON.stringify(user))            
+            let userProcessed = JSON.parse(JSON.stringify(user))    
+            console.log('esta aca dentro de passport');        
+
             if (userProcessed.data) return done(null,false)            
             const newUser ={
                 username:username,
@@ -73,8 +72,9 @@ export const initializePassportLocal = ()=>{
     passport.deserializeUser(async (id,done)=>{            
         console.log('en deserialize');
         let {data} = await users.getById(id)
-        let userProcessed = JSON.parse(JSON.stringify(data))            
-        done(null,userProcessed)
+        let userProcessed = JSON.parse(JSON.stringify(data))   
+        console.log(userProcessed);
+        if (userProcessed) {done(null,userProcessed)}
 
     })
 }

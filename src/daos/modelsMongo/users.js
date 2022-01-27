@@ -3,10 +3,12 @@ const collectionRef = 'users';
 const UsersSchema = {
     email: { 
         type: String, 
-        required: true},
+        required: true,
+        unique:true},
     username: { 
         type: String,
-        required: true },
+        required: true,
+        unique:true},
     name: {
         type: String, 
         required: true },
