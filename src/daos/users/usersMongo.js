@@ -11,34 +11,34 @@ export default class UsersMongo extends MongoConteiner{
     }    
     async getByEmail(email){
         try {
-            let document = await this.collection.findOne({email: email});    
+            let document = await this.collection.findOne({email:email});    
         if (!document)
-            return { status: 'Error', message: `No se encontro el email: ${email}` };
+            return {status:'error',message:`No se encontro el email: ${email}`};
     
-        return { status: 'success', data: document };
-        } catch (error) {
-            return { status: 'error', message: 'Hubo un error durante la operacion: ', error };
+        return {status: 'success',data:document};
+        }catch (error){
+            return {status:'error',message:'Hubo un error durante la operacion: ',error};
         }
     }
 
     async getByUserName(username){
         try {
-            let document = await this.collection.findOne({username: username});    
+            let document = await this.collection.findOne({username:username});    
         if (!document)
-            return { status: 'Error', message: `No se encontro el usuario: ${username}` };
+            return {status:'error',message: `No se encontro el usuario: ${username}`};
     
-        return { status: 'success', data: document };
-        } catch (error) {
-            return { status: 'error', message: 'Hubo un error durante la operacion: ', error };
+        return {status:'success',data:document};
+        }catch(error){
+            return {status:'error',message:'Hubo un error durante la operacion: ',error};
         }
     }
 
     async updateAvatar(email,avatarPicture){
         try {            
-            let result = await this.collection.updateOne({ email: email }, { $set: { avatar: avatarPicture } });
-            return { status: 'success', message: 'Se modifico url de avatar', data: result };
-        } catch (error) {
-            return { status: 'error', message: `no se encontro email: ${email}` };
+            let result = await this.collection.updateOne({email:email},{$set: {avatar:avatarPicture}});
+            return {status:'success',message:'Se modifico url de avatar',data: result};
+        }catch(error){
+            return {status:'error',message: `no se encontro email: ${email}`};
         };
     }
 }

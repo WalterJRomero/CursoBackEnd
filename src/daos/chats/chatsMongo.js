@@ -16,9 +16,9 @@ export default class ChatsMongo extends MongoContainer {
             const originalData = JSON.parse(JSON.stringify({ id: '1', messages: documents }))
             const normalizedData = normalize(originalData, texts)
         
-            return { status: 'success', data: normalizedData };
-        } catch (error) {
-            return { status: 'error', message: 'An error occurred: ', error }
+            return {status: 'success',data: normalizedData};
+        }catch(error){
+            return {status: 'error',message: 'An error occurred: ', error}
         }
     }
 };

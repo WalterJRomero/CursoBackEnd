@@ -3,15 +3,16 @@ import fbStrategy from 'passport-facebook';
 import {users} from './daos/index.js'
 import local from 'passport-local'
 import { createHash, isValidPassword } from "./utils.js";
+import config from './config.js'
 
 const FacebookStrategy = fbStrategy.Strategy;
 const LocalStrategy = local.Strategy;
 
 export const initializePassportConfig = ()=>{
     passport.use('facebook',new FacebookStrategy({
-        clientID:'898273697516167',
-        callbackURL:'https://9353-2800-810-598-8c39-d0c4-7f9-1b4-e97e.ngrok.io/auth/facebook/callback',
-        clientSecret:'a5c5485f55a5853f146e6ec272291676',
+        clientID: config.facebook.keyID,
+        callbackURL: config.facebook.callback,
+        clientSecret: config.facebook.keySecret,
         profileFields:['emails','picture','displayName']
     },async(accessToken,refreshToken,profile,done)=>{
         try{                  
@@ -30,9 +31,7 @@ export const initializePassportLocal = ()=>{
     passport.use('register',new LocalStrategy({passReqToCallback:true},async(req,username,password,done)=>{
         try{
             let user= await users.getByUserName(username);
-            let userProcessed = JSON.parse(JSON.stringify(user))    
-            console.log('esta aca dentro de passport');        
-
+            let userProcessed = JSON.parse(JSON.stringify(user))            
             if (userProcessed.data) return done(null,false)            
             const newUser ={
                 username:username,
@@ -64,13 +63,11 @@ export const initializePassportLocal = ()=>{
             done(err)
         }
     }))
-    passport.serializeUser((user,done)=>{   
-        console.log('en serialize');     
+    passport.serializeUser((user,done)=>{           
         let userProcessed = JSON.parse(JSON.stringify(user)) //parseo mi resultado para quitar el object id        
         done(null,userProcessed.data._id)
     })
-    passport.deserializeUser(async (id,done)=>{            
-        console.log('en deserialize');
+    passport.deserializeUser(async (id,done)=>{         
         let {data} = await users.getById(id)
         let userProcessed = JSON.parse(JSON.stringify(data))   
         console.log(userProcessed);

@@ -2,21 +2,30 @@ import express from 'express';
 import {engine} from 'express-handlebars';
 import cors from 'cors';
 import router from './routes/products.js';
-import cartRouter from './routes/cart.js'
+import cartRouter from './routes/cart.js';
+import randomsRouter from './routes/randoms.js';
 import {Server} from 'socket.io';
 import __dirname from './utils.js';
-import {products,chats,users} from './daos/index.js';
-// import { generate_dataProducts } from './utils.js';
+import {products,chats} from './daos/index.js';
 import session from 'express-session';
-import MongoStore from 'connect-mongo'
+import MongoStore from 'connect-mongo';
 import config from './config.js';
-import ios from 'socket.io-express-session'
-import passport from 'passport'
-import mongoose from 'mongoose'
+import ios from 'socket.io-express-session';
+import passport from 'passport';
 import {initializePassportConfig, initializePassportLocal} from './passport-config.js';
+import minimist from 'minimist';
+import {fork} from 'child_process'
+
+// import infoRouter from './routes/info.js';
+
+let minimizedArgs = minimist(process.argv.slice(2))
+let configArg ={
+    others:minimizedArgs._,
+    port:  minimizedArgs.p||8080
+}
 
 const app = express();
-const PORT = process.env.PORT||8080;
+const PORT = configArg.port;
 const server = app.listen(PORT,()=>{
     console.log('Server listening on port: '+PORT)
 })
@@ -29,7 +38,7 @@ const baseSession = (session({
     resave:true,
     cookie:{maxAge:600000},
     saveUninitialized:true,
-    secret:"CoderChat"
+    secret:config.secretCode.key
 }))
 
 app.engine('handlebars',engine());
@@ -56,6 +65,8 @@ app.use(passport.session());
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
 app.use('/api/cart',cartRouter);
+// app.use('/api/randoms',randomsRouter);
+// app.use('/info',infoRouter);
 
 app.get('/views/products',(req,res)=>{
     products.getAll().then(result=>{        
@@ -88,39 +99,6 @@ io.on('connection',async socket=>{
         io.emit('messagelog',chatData);       
     })             
 })
-
-//logueo y registro con usuario y contrasena
-
-// app.post('/register',async (req,res)=>{
-//     let userRegister = req.body;    
-//     //valida que no este un usuario ya registrado
-//     let {email} =req.body;    
-//     let userExists = await users.getByEmail(email);   
-//     if (userExists.status =='success') return res.status(400).send({error:'usuario ya registrado'})
-//     let result = await users.save(userRegister)
-//     res.send({message:'user created',user:result})    
-// })
-
-// app.post('/login',async (req,res)=>{    
-//     let {email,password} = req.body;    
-//     if(!email||!password) return res.status(400).send({error:"Incomplete fields"})   
-//     const user = await users.getByEmail(email);    
-//     if(user.status=='Error') return res.status(404).send({error:'usuario no encontrado'})    
-//     if(user.data.password!==password) return res.status(400).send({error:'contrasena incorrecta'})
-//     req.session.user={
-//         username:user.data.username,
-//         email:user.data.email,
-//         avatar:user.data.avatar,
-//         age:user.data.age,
-//         name:user.data.name,
-//         lastName:user.data.lastName
-//     }
-//     res.send({status:'logueado'})
-// })
-
-// app.get('/currentUser',(req,res)=>{    
-//     res.send(req.session.user)    
-// })
 
 app.get('/logout',(req,res)=>{    
     req.session.destroy((err) => {        
@@ -172,6 +150,36 @@ app.get('/auth/facebook/callback',passport.authenticate('facebook',{
 app.post('/failedLoginFb',(req,res)=>{   
     res.send({error:'no se pudo logguear'})
 })
+
+app.get('/info',async (req,res)=>{  
+    let argsData  
+    if (process.argv.slice(2).length===0) argsData = 'No hay argumentos'
+    else argsData = process.argv.slice(2)
+    let info ={
+        args: argsData,
+        cwd: process.cwd(),
+        pid: process.pid,
+        version: process.version,
+        title: process.title,
+        platform: process.platform ,
+        memoryUsage: JSON.stringify(process.memoryUsage()),
+        execPath: process.execPath,        
+    }    
+    res.send(info)     
+})
+
+app.get('/api/randoms',(req,res)=>{  
+    let data = req.query.cant
+    if (data===''||data===undefined) data= 100000000
+    else {
+        parseInt(data)        
+    }    
+    const randoms = fork('calc',[data]);
+    randoms.on('message',(data)=>{
+        res.send({randomsNumbers:data})
+    })
+})
+
 
 //capturo las rutas fuera de las que estan diseñadas
 app.use('/*', function(req, res){
