@@ -3,7 +3,6 @@ import {engine} from 'express-handlebars';
 import cors from 'cors';
 import router from './routes/products.js';
 import cartRouter from './routes/cart.js';
-import randomsRouter from './routes/randoms.js';
 import {Server} from 'socket.io';
 import __dirname from './utils.js';
 import {products,chats} from './daos/index.js';
@@ -15,23 +14,49 @@ import passport from 'passport';
 import {initializePassportConfig, initializePassportLocal} from './passport-config.js';
 import minimist from 'minimist';
 import {fork} from 'child_process'
-
-// import infoRouter from './routes/info.js';
+import cluster from 'cluster'
+import core from 'os'
 
 let minimizedArgs = minimist(process.argv.slice(2))
 let configArg ={
     others:minimizedArgs._,
+    mode: minimizedArgs.mode||'fork',
     port:  minimizedArgs.p||8080
 }
 
 const app = express();
 const PORT = configArg.port;
-const server = app.listen(PORT,()=>{
-    console.log('Server listening on port: '+PORT)
-})
+let server 
+
+if (configArg.mode==="cluster"){
+    if (cluster.isPrimary){
+        console.log(`Proceso primario en modo CLUSTER con pid ${process.pid} corriendo`);
+        for (let i=0;i<core.cpus().length;i++){
+            cluster.fork()
+        }
+        cluster.on('exit',(worker,code,signal)=>{
+            console.log(`Worker en modo CLUSTER con pid ${worker.process.pid} finalizado`);
+            cluster.fork()
+            console.log(`Cluster restaurado`);
+        })
+    }else {
+        console.log(`Worker en modo CLUSTER con pid ${process.pid} iniciado`);
+        server = app.listen(PORT,()=>console.log(`Worker en modo CLUSTER con pid ${process.pid} escuchando en el puerto ${PORT}`))
+    }
+}else{
+    if (cluster.isPrimary){
+        console.log(`Proceso primario en modo fork con pid ${process.pid} corriendo`);    
+        cluster.fork()    
+    }else {
+        console.log(`soy un worker en modo fork con pid ${process.pid}`);  
+        server = app.listen(PORT,()=>{
+            console.log('Server listening on port: '+PORT)
+        })  
+    }
+}
+
 export const io = new Server(server);
 export const admin=true;
-
 
 const baseSession = (session({
     store:MongoStore.create({mongoUrl:config.mongoSessions.baseUrl}),
@@ -65,8 +90,6 @@ app.use(passport.session());
 app.use(express.static(__dirname+'/public'));
 app.use('/api/products',router);
 app.use('/api/cart',cartRouter);
-// app.use('/api/randoms',randomsRouter);
-// app.use('/info',infoRouter);
 
 app.get('/views/products',(req,res)=>{
     products.getAll().then(result=>{        
@@ -163,7 +186,8 @@ app.get('/info',async (req,res)=>{
         title: process.title,
         platform: process.platform ,
         memoryUsage: JSON.stringify(process.memoryUsage()),
-        execPath: process.execPath,        
+        execPath: process.execPath,    
+        CPUs:core.cpus().length
     }    
     res.send(info)     
 })
@@ -179,7 +203,6 @@ app.get('/api/randoms',(req,res)=>{
         res.send({randomsNumbers:data})
     })
 })
-
 
 //capturo las rutas fuera de las que estan diseñadas
 app.use('/*', function(req, res){
