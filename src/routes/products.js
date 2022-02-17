@@ -1,12 +1,12 @@
 import express from 'express';
 import __dirname from '../utils.js';
 import {io} from '../server.js'
-import { authMiddleware } from '../utils.js';
+import { authMiddleware, generate_dataProducts , createLogger} from '../utils.js';
 import {products,persistence} from '../daos/index.js'
-import { generate_dataProducts } from '../utils.js';
+import config from '../config.js'
 
 const router = express.Router();
-
+const logger = createLogger(config.nodeEnv.env)
 
 router.get('/products-test',(req,res)=>{
     let test_products = generate_dataProducts()
@@ -20,6 +20,7 @@ router.get('/',async (req,res)=>{
     if (data) {//si existen datos los envio, 
         res.send(data);
     } else {//si no existen datos para mostrar, entonces se envia el mensaje de error
+       logger.error("Error, no existen datos para mostrar");
        res.status(404).send({error:message});
     }    
 })
@@ -33,6 +34,7 @@ router.get('/:id',async (req,res)=>{
     if(data) {
         res.send(data);//envio los datos obtenidos
     } else {
+        logger.error("Error, producto no encontrado");
         res.status(404).send({error:`Producto con id: ${productId_request} no encontrado`});
     }
 })
@@ -46,6 +48,8 @@ router.post('/',authMiddleware,async (req,res)=>{
             products.getAll().then(result=>{            
             io.emit('updateProducts',result);
         })
+    }else{
+        logger.error("Error al intentar guardar el producto");
     }    
 })
 
@@ -57,7 +61,10 @@ router.put('/:id',authMiddleware,async (req,res)=>{
     }    
     let product = req.body;//obtengo todo el producto completo que quiero modificar
     let result = await products.updateById(product_to_update,product);//intento modificar el producto, luego me dará un resultado   
-    res.send(result) //el resultado podrá ser success o error             
+    res.send(result) //el resultado podrá ser success o error   
+    if(result==='error'){
+        logger.error("Error al intentar modificar");
+    }          
 })
 
 // DELETE borra un producto por su id
@@ -67,7 +74,10 @@ router.delete('/:id',authMiddleware,async (req,res)=>{
         product_to_delete= parseInt(product_to_delete)//parse para el caso de filesystem
     }    
     let result = await products.deleteById(product_to_delete); //intento borrar el producto por su id
-    res.send(result)//envio los resultados, sean success o error    
+    res.send(result)//envio los resultados, sean success o error   
+    if(result==='error'){
+        logger.error("Error al intentar borrar");
+    }   
 })
 
 export default router

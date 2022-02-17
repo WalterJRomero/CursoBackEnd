@@ -13,9 +13,12 @@ import ios from 'socket.io-express-session';
 import passport from 'passport';
 import {initializePassportConfig, initializePassportLocal} from './passport-config.js';
 import minimist from 'minimist';
-import {fork} from 'child_process'
-import cluster from 'cluster'
-import core from 'os'
+import {fork} from 'child_process';
+import cluster from 'cluster';
+import core from 'os';
+import log4js from 'log4js';
+import {createLogger} from './utils.js';
+import compression from 'compression';
 
 let minimizedArgs = minimist(process.argv.slice(2))
 let configArg ={
@@ -26,6 +29,8 @@ let configArg ={
 
 const app = express();
 const PORT = configArg.port;
+app.use(compression())
+
 let server 
 
 if (configArg.mode==="cluster"){
@@ -65,7 +70,63 @@ const baseSession = (session({
     saveUninitialized:true,
     secret:config.secretCode.key
 }))
+//--------------------LOGGERS---------------------------------------------------------
+// log4js.configure({
+//     appenders:{
+//         console:{type:"console"},
+//         debugFile:{type:"file",filename:"./debug.log"},
+//         errorsFile:{type:"file",filename:"./errors.log"},
+//         errorLevelFilter:{
+//             type:"logLevelFilter",
+//             level:"error",
+//             appender:"errorsFile"
+//         }
+//     },
+//     categories:{
+//         default:{
+//             appenders:["console"],level:"all"        
+//         },
+//         DEV:{
+//             appenders:["debugFile","console"],level:"all"
+//         },
+//         PROD:{
+//             appenders:["console",'errorLevelFilter'],level:"all"
+//         }
+//     }
+// })
 
+//const logger = log4js.getLogger('PROD')
+
+// app.get('/logger',(req,res)=>{
+//     logger.info('Hola loggers')
+//     res.send("hola")
+// })
+// app.get('/loggerError',(req,res)=>{
+//     logger.error('Hubo un error')
+//     res.send("hola")
+// })
+//----------------------------------------------------------------------------------
+const logger = createLogger(config.nodeEnv.env)
+app.use((req,res,next)=>{
+    logger.log('info',`${req.method} at ${req.path}`)
+    next();
+})
+app.get('/logger',(req,res)=>{
+    logger.info('mostrando hola')
+    res.send('hola logger')
+})
+app.get('/error',(req,res)=>{
+    logger.error("Este es un error");
+    res.send("error")
+})
+// app.get('/*',(req,res)=>{
+//     logger.warn('visited unused endpoint')
+//     res.status(404).send({error:"invalid endpoint"})
+// })
+
+
+
+//-----------------------------------------------------------------------------------
 app.engine('handlebars',engine());
 app.set('views',__dirname+'/views');
 app.set('view engine','handlebars');
@@ -78,7 +139,7 @@ app.use(express.urlencoded({extended:true}));
 app.use((req,res,next)=>{
     let timestamp = Date.now();
     let time = new Date(timestamp);
-    console.log('Peticion hecha a las: '+time.toTimeString().split(" ")[0],req.method,req.url);    
+    // console.log('Peticion hecha a las: '+time.toTimeString().split(" ")[0],req.method,req.url);    
     req.auth = admin
     next();
 })
@@ -210,6 +271,7 @@ app.use('/*', function(req, res){
         route:req.params[0],
         method:req.method,
     }    
+    logger.warn('visited unused endpoint')
     res.render('error',error)
 });
 

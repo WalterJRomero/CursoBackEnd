@@ -2,9 +2,56 @@ import { fileURLToPath } from "url";
 import {dirname} from 'path';
 import faker from 'faker';
 import bcrypt from 'bcrypt'
+import winston from "winston";
+import log4js from "log4js";
 
 const filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(filename);
+
+export const createLogger = (env) =>{
+    if (env==="PROD"){
+        return winston.createLogger({
+            transports:[
+                new winston.transports.File({filename:"info.log",level:"info"}),
+                new winston.transports.File({filename:"errors.log",level:"error"}),
+                new winston.transports.File({filename:"warns.log",level:"warn"}),
+                new winston.transports.Console({level:"info"})
+            ]
+        })
+    }else{
+        return winston.createLogger({
+            transports:[
+                new winston.transports.Console({level:"info"})
+            ]
+        })
+    }
+}
+
+// log4js.configure({
+//     appenders:{
+//         console:{type:"console"},
+//         debugFile:{type:"file",filename:"./debug.log"},
+//         errorsFile:{type:"file",filename:"./errors.log"},
+//         errorLevelFilter:{
+//             type:"logLevelFilter",
+//             level:"error",
+//             appender:"errorsFile"
+//         }
+//     },
+//     categories:{
+//         default:{
+//             appenders:["console"],level:"all"        
+//         },
+//         DEV:{
+//             appenders:["debugFile","console"],level:"all"
+//         },
+//         PROD:{
+//             appenders:["console",'errorLevelFilter'],level:"all"
+//         }
+//     }
+// })
+
+
 
 //middleware utilizado para validar si se esta en modo administrador o no
 export const authMiddleware = (req,res,next)=>{
