@@ -1,33 +1,35 @@
+import FileConteiner from "../../contenedores/FileConteiner.js";
 import fs from 'fs'
+import __dirname from '../../utils.js';
 
-class Conteiner{    
-    constructor(fileName){
-        this.fileName=fileName
+export default class ProductsFileSystem extends FileConteiner{
+    constructor(){
+        super('productsList.json');//envio el nombre del archivo que tiene mis productos
     }
-    // metodo utilizado para guardar un producto y devolver el id, el producto es ingresado como un {}
-    async save(product){         
+    
+    async save(product_to_create){         
         try{
-            let data =await fs.promises.readFile(this.fileName,'utf-8');
+            let data =await fs.promises.readFile(this.url,'utf-8');
             let products =JSON.parse(data); 
             let nuevoId = products[products.length-1].id+1;
-            if (products.some(prod=>prod.title===product.title)){ 
+            if (products.some(prod=>prod.title===product_to_create.title)){ 
                 return {status:"error",message:"Producto existente"}
             }else{
                 let timestamp = Date.now();
                 let time = new Date(timestamp);
                 let prodObj = {                    
                     timestamp:time,
-                    title:product.title,
-                    description:product.description,
-                    code:product.code,
-                    thumbnail:product.thumbnail,
-                    price:product.price,
-                    stock:product.stock,
+                    title:product_to_create.title,
+                    description:product_to_create.description,
+                    code:product_to_create.code,
+                    thumbnail:product_to_create.thumbnail,
+                    price:product_to_create.price,
+                    stock:product_to_create.stock,
                     id:nuevoId,
                 }                                
                 products.push(prodObj);
                 try{
-                    await fs.promises.writeFile(this.fileName,JSON.stringify(products,null,2));                                        
+                    await fs.promises.writeFile(this.url,JSON.stringify(products,null,2));                                        
                     return {status:"success",message:"Producto agregado",id:prodObj.id}
 
                 }catch(err){
@@ -39,16 +41,16 @@ class Conteiner{
             let time = new Date(timestamp);
             let prodObj = {                
                 timestamp:time,
-                title:product.title,
-                description:product.description,
-                code:product.code,
-                thumbnail:product.thumbnail,
-                price:product.price,
-                stock:product.stock,
+                title:product_to_create.title,
+                description:product_to_create.description,
+                code:product_to_create.code,
+                thumbnail:product_to_create.thumbnail,
+                price:product_to_create.price,
+                stock:product_to_create.stock,
                 id:1,
             }    
             try {
-                await fs.promises.writeFile(this.fileName,JSON.stringify([prodObj]),null,2) 
+                await fs.promises.writeFile(this.url,JSON.stringify([prodObj]),null,2) 
                 return {status:"success",message:"Producto agregado",id:prodObj.id}
 
             }catch(err){
@@ -57,11 +59,11 @@ class Conteiner{
         }
     }
     //este metodo se utiliza para buscar un producto por su id
-    async getById(numberId){
+    async getById(productId_request){
         try{            
-            let data = await fs.promises.readFile(this.fileName,'utf-8');            
+            let data = await fs.promises.readFile(this.url,'utf-8');            
             let products = JSON.parse(data);            
-            let prod = products.find(prod=>prod.id===numberId);            
+            let prod = products.find(prod=>prod.id===productId_request);            
             if (prod){
                 return {status:"success",data:prod}
             }else{
@@ -74,7 +76,7 @@ class Conteiner{
     //metodo para devolver todos los productos del archivo guardado
     async getAll(){
         try{
-            let data = await fs.promises.readFile(this.fileName,'utf-8');
+            let data = await fs.promises.readFile(this.url,'utf-8');
             let products = JSON.parse(data);            
             if (products){
                 return {status:"success",data:products}
@@ -86,23 +88,28 @@ class Conteiner{
         }
     }
     //metodo utilizado para actualizar caracteristicas del producto, se requiere ID y el producto
-    async updateProduct(id,productSelect){
+    async updateProduct(productId_request,product_to_update){
         try{
-            let data = await fs.promises.readFile(this.fileName,'utf-8');
-            let products = JSON.parse(data);                        
-
-            if(!products.some(product=>product.id===id)) return {status:"error", message:"No hay un producto con el id elegido"}
+            let data = await fs.promises.readFile(this.url,'utf-8');
+            let products = JSON.parse(data);    
+            if(!products.some(product=>product.id===productId_request)) return {status:"error", message:"No hay un producto con el id elegido"}
             let result = products.map(product=>{                
-                if(product.id===id){                     
-                    productSelect = Object.assign(productSelect,{title:productSelect.title,description:productSelect.description,code:productSelect.code,thumbnail:productSelect.thumbnail,price:productSelect.price,stock:productSelect.stock})                    
-                    productSelect = Object.assign({...productSelect,id:product.id})                    
-                    return productSelect                    
+                if(product.id===productId_request){                     
+                    product_to_update = Object.assign(product_to_update,{
+                        title:product_to_update.title,
+                        description:product_to_update.description,
+                        code:product_to_update.code,
+                        thumbnail:product_to_update.thumbnail,
+                        price:product_to_update.price,
+                        stock:product_to_update.stock})                    
+                        product_to_update = Object.assign({...product_to_update,id:product.id})                    
+                    return product_to_update                    
                 }else{                   
                     return product;
                 }
             })            
             try{
-                await fs.promises.writeFile(this.fileName,JSON.stringify(result,null,2));
+                await fs.promises.writeFile(this.url,JSON.stringify(result,null,2));
                 return {status:"success", message:"Producto actualizado"}
             }catch{
                 return {status:"error", message:"Error al actualizar el producto"}
@@ -112,14 +119,14 @@ class Conteiner{
         }
     }
     //permite borrar un producto por su numero de id
-    async deletebyId(numberId){
+    async deletebyId(productId_request){
         try{
-            let data = await fs.promises.readFile(this.fileName,'utf-8');
-            let products = JSON.parse(data); 
-            let prod = products.find(prod=>prod.id===numberId);
+            let result = await fs.promises.readFile(this.url,'utf-8');
+            let products = JSON.parse(result); 
+            let prod = products.find(prod=>prod.id===productId_request);
             if (prod){
-                let newProducts = products.filter((p)=>p.id!=numberId)                           
-                await fs.promises.writeFile(this.fileName,JSON.stringify(newProducts),null,2)                 
+                let newProducts = products.filter((p)=>p.id!=productId_request)                           
+                await fs.promises.writeFile(this.url,JSON.stringify(newProducts),null,2)                 
                 return {status:"success",message:"Se eliminó el producto elegido"} 
             }else{
                 return {status:"error",message:"No había productos para eliminar"}           
@@ -128,15 +135,4 @@ class Conteiner{
             return {status:"error",message:err}
         }
     }
-    // borra o pone en vacío el archivo de productos
-    async deleteAll(){
-        try{
-            await fs.promises.writeFile(this.fileName,JSON.stringify(''),null,2);
-            return {status:"success",message:"Todos los productos fueron eliminados"}         
-        }catch(err){
-            return {status:"error",message:err}
-        }
-    }
 }
-
-export default Conteiner

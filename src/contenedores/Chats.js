@@ -55,16 +55,7 @@ class Chats{
         }catch(err){
             return {status:"error", message:err}
         }
-    }
-    //borra el archivo de chats, lo deja vacío
-    async deleteAllChats(){
-        try{
-            await fs.promises.writeFile(this.fileName,JSON.stringify(''),null,2);
-            return {status:"success",message:"Todos los chats fueron eliminados"}         
-        }catch(err){
-            return {status:"error",message:err}
-        }
-    }
+    } 
 }
 
 export default Chats

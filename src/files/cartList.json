@@ -38,5 +38,15 @@
     "products": [
       1
     ]
+  },
+  {
+    "id": 6,
+    "timestamp": "2021-12-30T01:16:58.337Z",
+    "products": []
+  },
+  {
+    "id": 7,
+    "timestamp": "2022-01-03T20:03:04.461Z",
+    "products": []
   }
 ]
