@@ -3,7 +3,6 @@ import {dirname} from 'path';
 import faker from 'faker';
 import bcrypt from 'bcrypt'
 import winston from "winston";
-import log4js from "log4js";
 
 const filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(filename);
@@ -26,32 +25,6 @@ export const createLogger = (env) =>{
         })
     }
 }
-
-// log4js.configure({
-//     appenders:{
-//         console:{type:"console"},
-//         debugFile:{type:"file",filename:"./debug.log"},
-//         errorsFile:{type:"file",filename:"./errors.log"},
-//         errorLevelFilter:{
-//             type:"logLevelFilter",
-//             level:"error",
-//             appender:"errorsFile"
-//         }
-//     },
-//     categories:{
-//         default:{
-//             appenders:["console"],level:"all"        
-//         },
-//         DEV:{
-//             appenders:["debugFile","console"],level:"all"
-//         },
-//         PROD:{
-//             appenders:["console",'errorLevelFilter'],level:"all"
-//         }
-//     }
-// })
-
-
 
 //middleware utilizado para validar si se esta en modo administrador o no
 export const authMiddleware = (req,res,next)=>{
