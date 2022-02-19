@@ -16,7 +16,6 @@ import minimist from 'minimist';
 import {fork} from 'child_process';
 import cluster from 'cluster';
 import core from 'os';
-import log4js from 'log4js';
 import {createLogger} from './utils.js';
 import compression from 'compression';
 
@@ -71,41 +70,7 @@ const baseSession = (session({
     secret:config.secretCode.key
 }))
 //--------------------LOGGERS---------------------------------------------------------
-// log4js.configure({
-//     appenders:{
-//         console:{type:"console"},
-//         debugFile:{type:"file",filename:"./debug.log"},
-//         errorsFile:{type:"file",filename:"./errors.log"},
-//         errorLevelFilter:{
-//             type:"logLevelFilter",
-//             level:"error",
-//             appender:"errorsFile"
-//         }
-//     },
-//     categories:{
-//         default:{
-//             appenders:["console"],level:"all"        
-//         },
-//         DEV:{
-//             appenders:["debugFile","console"],level:"all"
-//         },
-//         PROD:{
-//             appenders:["console",'errorLevelFilter'],level:"all"
-//         }
-//     }
-// })
 
-//const logger = log4js.getLogger('PROD')
-
-// app.get('/logger',(req,res)=>{
-//     logger.info('Hola loggers')
-//     res.send("hola")
-// })
-// app.get('/loggerError',(req,res)=>{
-//     logger.error('Hubo un error')
-//     res.send("hola")
-// })
-//----------------------------------------------------------------------------------
 const logger = createLogger(config.nodeEnv.env)
 app.use((req,res,next)=>{
     logger.log('info',`${req.method} at ${req.path}`)
@@ -123,8 +88,6 @@ app.get('/error',(req,res)=>{
 //     logger.warn('visited unused endpoint')
 //     res.status(404).send({error:"invalid endpoint"})
 // })
-
-
 
 //-----------------------------------------------------------------------------------
 app.engine('handlebars',engine());
